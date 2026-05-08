@@ -1,0 +1,440 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détail de l'entretien - ParcAuto{% endblock %}
+
+{% block page_icon 'tools' %}
+
+{% block page_title %}Détail de l'entretien{% endblock %}
+
+{% block page_description %}
+    Informations complètes sur l'entretien du véhicule
+{% endblock %}
+
+{% block page_actions %}
+    <a href="{{ path('app_entretien_index') }}" 
+       class="btn btn-outline-secondary d-flex align-items-center gap-2">
+        <i class="bi bi-arrow-left"></i>
+        <span>Retour à la liste</span>
+    </a>
+{% endblock %}
+
+{% block body %}
+<!-- Message simple (remplace les flash messages) -->
+{% if simple_message is defined and simple_message %}
+    <div class="simple-message success mb-4">
+        <i class="bi bi-check-circle me-2"></i>
+        {{ simple_message }}
+    </div>
+{% endif %}
+
+<div class="row">
+    <div class="col-lg-8">
+        <!-- Carte principale des détails -->
+        <div class="card border-0 shadow-lg">
+            <div class="card-header bg-white border-0 py-4">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="bg-info bg-opacity-10 text-info rounded-circle d-flex align-items-center justify-content-center"
+                         style="width: 50px; height: 50px;">
+                        <i class="bi bi-tools fs-4"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-1">Détail de l'entretien</h5>
+                        <p class="text-muted mb-0">
+                            <i class="bi bi-calendar-check me-1"></i>
+                            ID: #{{ entretien.id }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-body p-4 p-lg-5">
+                <!-- Informations principales -->
+                <div class="row mb-5">
+                    <div class="col-md-6 mb-4">
+                        <div class="card border-0 bg-light-subtle h-100">
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-center gap-3 mb-3">
+                                    <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center"
+                                         style="width: 40px; height: 40px;">
+                                        <i class="bi bi-calendar"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="fw-semibold text-primary mb-0">Date & Heure</h6>
+                                    </div>
+                                </div>
+                                <div class="display-6 fw-bold text-dark mb-2">
+                                    {{ entretien.date ? entretien.date|date('d/m/Y') : '—' }}
+                                </div>
+                                <div class="text-muted">
+                                    <i class="bi bi-clock me-1"></i>
+                                    {{ entretien.date ? entretien.date|date('H:i') : '—' }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 mb-4">
+                        <div class="card border-0 bg-light-subtle h-100">
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-center gap-3 mb-3">
+                                    <div class="bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center"
+                                         style="width: 40px; height: 40px;">
+                                        <i class="bi bi-cash-stack"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="fw-semibold text-success mb-0">Coût total</h6>
+                                    </div>
+                                </div>
+                                <div class="display-6 fw-bold text-success mb-2">
+                                    {{ entretien.cout|number_format(2, ',', ' ') }}
+                                </div>
+                                <div class="text-muted">
+                                    <i class="bi bi-currency-exchange me-1"></i>
+                                    DH (TTC)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Détails complets -->
+                <div class="card border-0 bg-light-subtle mb-4">
+                    <div class="card-body p-4">
+                        <h6 class="fw-semibold text-dark mb-4">
+                            <i class="bi bi-card-checklist text-danger me-2"></i>
+                            Informations détaillées
+                        </h6>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="mb-3">
+                                    <div class="small text-muted mb-2">
+                                        <i class="bi bi-tag me-1"></i>
+                                        Type d'entretien
+                                    </div>
+                                    {% if entretien.type == 'Révision' %}
+                                        <span class="badge bg-primary bg-opacity-15 text-primary-emphasis border border-primary border-opacity-25 rounded-pill px-3 py-2 d-inline-flex align-items-center gap-1 fw-semibold">
+                                            <i class="bi bi-gear-fill"></i>
+                                            Révision
+                                        </span>
+                                    {% elseif entretien.type == 'Réparation' %}
+                                        <span class="badge bg-danger bg-opacity-15 text-danger-emphasis border border-danger border-opacity-25 rounded-pill px-3 py-2 d-inline-flex align-items-center gap-1 fw-semibold">
+                                            <i class="bi bi-tools"></i>
+                                            Réparation
+                                        </span>
+                                    {% elseif entretien.type == 'Entretien' %}
+                                        <span class="badge bg-warning bg-opacity-15 text-warning-emphasis border border-warning border-opacity-25 rounded-pill px-3 py-2 d-inline-flex align-items-center gap-1 fw-semibold">
+                                            <i class="bi bi-wrench"></i>
+                                            Entretien
+                                        </span>
+                                    {% elseif entretien.type == 'Contrôle technique' %}
+                                        <span class="badge bg-info bg-opacity-15 text-info-emphasis border border-info border-opacity-25 rounded-pill px-3 py-2 d-inline-flex align-items-center gap-1 fw-semibold">
+                                            <i class="bi bi-clipboard-check"></i>
+                                            Contrôle technique
+                                        </span>
+                                    {% elseif entretien.type == 'Vidange' %}
+                                        <span class="badge bg-success bg-opacity-15 text-success-emphasis border border-success border-opacity-25 rounded-pill px-3 py-2 d-inline-flex align-items-center gap-1 fw-semibold">
+                                            <i class="bi bi-droplet-fill"></i>
+                                            Vidange
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 rounded-pill px-3 py-2">
+                                            {{ entretien.type }}
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <div class="mb-3">
+                                    <div class="small text-muted mb-2">
+                                        <i class="bi bi-car-front me-1"></i>
+                                        Véhicule concerné
+                                    </div>
+                                    {% if entretien.vehicle %}
+                                        <a href="{{ path('app_vehicle_show', {'id': entretien.vehicle.id}) }}" 
+                                           class="text-decoration-none">
+                                            <div class="d-flex align-items-center gap-2 p-2 bg-white rounded border">
+                                                <div class="bg-danger bg-opacity-10 text-danger rounded-circle d-flex align-items-center justify-content-center"
+                                                     style="width: 32px; height: 32px;">
+                                                    <i class="bi bi-car-front"></i>
+                                                </div>
+                                                <div>
+                                                    <div class="fw-semibold text-dark">{{ entretien.vehicle.immatriculation }}</div>
+                                                    <div class="small text-muted">{{ entretien.vehicle.modele }}</div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    {% else %}
+                                        <div class="text-muted fst-italic">
+                                            <i class="bi bi-question-circle me-1"></i>
+                                            Aucun véhicule associé
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mt-4">
+                            <div class="small text-muted mb-2">
+                                <i class="bi bi-chat-left-text me-1"></i>
+                                Description
+                            </div>
+                            <div class="card border-0 bg-white">
+                                <div class="card-body p-3">
+                                    {% if entretien.description %}
+                                        <p class="mb-0">{{ entretien.description|nl2br }}</p>
+                                    {% else %}
+                                        <p class="text-muted fst-italic mb-0">
+                                            <i class="bi bi-dash-circle me-1"></i>
+                                            Aucune description fournie
+                                        </p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                    <div>
+                        <a href="{{ path('app_entretien_index') }}" 
+                           class="btn btn-outline-secondary d-flex align-items-center gap-2">
+                            <i class="bi bi-arrow-left"></i>
+                            <span>Retour à la liste</span>
+                        </a>
+                    </div>
+                    
+                    <div class="d-flex gap-3">
+                        <a href="{{ path('app_entretien_edit', {'id': entretien.id}) }}"
+                           class="btn btn-outline-primary d-flex align-items-center gap-2"
+                           data-bs-toggle="tooltip"
+                           title="Modifier cet entretien">
+                            <i class="bi bi-pencil"></i>
+                            <span>Modifier</span>
+                        </a>
+
+                        {# Bouton vers la page de confirmation #}
+                        <a href="{{ path('app_entretien_delete_confirm', {'id': entretien.id}) }}"
+                           class="btn btn-danger d-flex align-items-center gap-2"
+                           data-bs-toggle="tooltip"
+                           title="Supprimer cet entretien">
+                            <i class="bi bi-trash"></i>
+                            <span>Supprimer</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <!-- Actions rapides -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white border-0 py-4">
+                <h5 class="mb-0 text-danger fw-semibold">
+                    <i class="bi bi-lightning-charge me-2"></i>
+                    Actions rapides
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-3">
+                    <a href="{{ path('app_entretien_new') }}" 
+                       class="btn btn-danger d-flex align-items-center justify-content-center gap-2">
+                        <i class="bi bi-plus-circle"></i>
+                        <span>Nouvel entretien</span>
+                    </a>
+                    
+                    <a href="{{ path('app_entretien_edit', {'id': entretien.id}) }}" 
+                       class="btn btn-outline-primary d-flex align-items-center justify-content-center gap-2">
+                        <i class="bi bi-pencil"></i>
+                        <span>Modifier cet entretien</span>
+                    </a>
+                    
+                    {% if entretien.vehicle %}
+                        <a href="{{ path('app_vehicle_show', {'id': entretien.vehicle.id}) }}" 
+                           class="btn btn-outline-info d-flex align-items-center justify-content-center gap-2">
+                            <i class="bi bi-car-front"></i>
+                            <span>Voir le véhicule</span>
+                        </a>
+                    {% endif %}
+                    
+                    <a href="{{ path('app_entretien_index') }}" 
+                       class="btn btn-outline-secondary d-flex align-items-center justify-content-center gap-2">
+                        <i class="bi bi-list-ul"></i>
+                        <span>Tous les entretiens</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Informations techniques -->
+        <div class="card border-0 bg-info bg-opacity-5">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="bg-info bg-opacity-10 text-info rounded-circle d-flex align-items-center justify-content-center"
+                         style="width: 40px; height: 40px;">
+                        <i class="bi bi-info-circle"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-semibold text-info mb-1">Informations techniques</h6>
+                        <p class="small text-muted mb-0">
+                            Référence de l'entretien
+                        </p>
+                    </div>
+                </div>
+                
+                <ul class="list-unstyled small text-muted mb-0">
+                    <li class="mb-2 d-flex align-items-center">
+                        <i class="bi bi-hash text-danger me-2"></i>
+                        <strong class="me-1">ID :</strong> #{{ entretien.id }}
+                    </li>
+                    <li class="mb-2 d-flex align-items-center">
+                        <i class="bi bi-clock text-primary me-2"></i>
+                        <strong class="me-1">Date :</strong> {{ entretien.date ? entretien.date|date('d/m/Y H:i') : '—' }}
+                    </li>
+                    <li class="mb-2 d-flex align-items-center">
+                        <i class="bi bi-cash-coin text-success me-2"></i>
+                        <strong class="me-1">Coût :</strong> {{ entretien.cout|number_format(2, ',', ' ') }} DH
+                    </li>
+                    <li class="d-flex align-items-center">
+                        <i class="bi bi-tag text-warning me-2"></i>
+                        <strong class="me-1">Type :</strong> {{ entretien.type }}
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Style pour les messages simples */
+    .simple-message {
+        padding: 12px 20px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        border-left: 4px solid;
+        background-color: rgba(25, 135, 84, 0.1);
+        color: #0a3622;
+        font-weight: 500;
+        animation: none;
+        opacity: 1;
+    }
+    
+    .simple-message.success {
+        background-color: rgba(25, 135, 84, 0.1);
+        border-left-color: #198754;
+        color: #0a3622;
+    }
+    
+    .simple-message.danger {
+        background-color: rgba(220, 53, 69, 0.1);
+        border-left-color: #dc3545;
+        color: #58151c;
+    }
+    
+    .simple-message.info {
+        background-color: rgba(13, 202, 240, 0.1);
+        border-left-color: #0dcaf0;
+        color: #055160;
+    }
+    
+    .simple-message i {
+        font-size: 1.1em;
+    }
+    
+    /* Styles existants */
+    .card {
+        border-radius: 12px;
+    }
+    
+    .bg-danger.bg-opacity-5 {
+        background-color: rgba(220, 38, 38, 0.05) !important;
+    }
+    
+    .bg-info.bg-opacity-5 {
+        background-color: rgba(13, 202, 240, 0.05) !important;
+    }
+    
+    .border-danger {
+        border-color: #dc2626 !important;
+    }
+    
+    .alert {
+        border-radius: 8px;
+        border: none;
+    }
+    
+    .btn {
+        border-radius: 8px;
+        padding: 0.625rem 1.5rem;
+        font-weight: 500;
+    }
+    
+    .d-grid .btn {
+        width: 100%;
+    }
+    
+    .display-6 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        line-height: 1;
+    }
+    
+    .badge {
+        font-weight: 600;
+        letter-spacing: 0.3px;
+        font-size: 0.85em;
+    }
+    
+    /* Couleurs plus contrastées pour les badges */
+    .badge.bg-primary {
+        background-color: rgba(13, 110, 253, 0.15) !important;
+        color: #052c65 !important;
+        border-color: #0d6efd !important;
+    }
+    
+    .badge.bg-danger {
+        background-color: rgba(220, 53, 69, 0.15) !important;
+        color: #58151c !important;
+        border-color: #dc3545 !important;
+    }
+    
+    .badge.bg-warning {
+        background-color: rgba(255, 193, 7, 0.15) !important;
+        color: #664d03 !important;
+        border-color: #ffc107 !important;
+    }
+    
+    .badge.bg-info {
+        background-color: rgba(13, 202, 240, 0.15) !important;
+        color: #055160 !important;
+        border-color: #0dcaf0 !important;
+    }
+    
+    .badge.bg-success {
+        background-color: rgba(25, 135, 84, 0.15) !important;
+        color: #0a3622 !important;
+        border-color: #198754 !important;
+    }
+    
+    .modal-content {
+        border-radius: 12px;
+    }
+    
+    /* Effet de survol pour les liens véhicule */
+    .bg-white.rounded.border:hover {
+        border-color: #dc2626 !important;
+        background-color: rgba(220, 38, 38, 0.02) !important;
+        transition: all 0.2s ease;
+    }
+    
+    /* Style pour le bouton de suppression */
+    .btn-danger.btn-sm {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+    }
+</style>
+{% endblock %}

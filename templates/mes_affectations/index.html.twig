@@ -1,0 +1,212 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes affectations - ParcAuto{% endblock %}
+{% block page_icon 'person-circle' %}
+{% block page_title %}Mes affectations de véhicules{% endblock %}
+{% block page_description %}Consultez vos véhicules affectés et leurs informations{% endblock %}
+
+{% block page_actions %}
+    <div class="d-flex align-items-center gap-2 text-muted">
+        <i class="bi bi-person-fill"></i>
+        <span class="fw-semibold">{{ app.user.prenom }} {{ app.user.nom }}</span>
+        <span class="small">| Conducteur</span>
+    </div>
+{% endblock %}
+
+{% block body %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-0 bg-info bg-opacity-5">
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between align-items-center gap-3">
+                    <div>
+                        <h6 class="mb-1 text-info fw-semibold"><i class="bi bi-info-circle me-2"></i>Mes affectations</h6>
+                        <div class="d-flex flex-wrap gap-4">
+                            {% set total = affectations_en_cours|length + affectations_a_venir|length + affectations_terminees|length %}
+                            <span class="badge bg-info bg-opacity-10 text-info rounded-pill px-3 py-1">
+                                <i class="bi bi-person-badge me-1"></i>{{ total }} affectation(s)
+                            </span>
+                            {% if affectations_en_cours|length > 0 %}
+                            <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-1">
+                                <i class="bi bi-play-circle me-1"></i>{{ affectations_en_cours|length }} en cours
+                            </span>
+                            {% endif %}
+                            {% if affectations_a_venir|length > 0 %}
+                            <span class="badge bg-warning bg-opacity-10 text-warning rounded-pill px-3 py-1">
+                                <i class="bi bi-clock me-1"></i>{{ affectations_a_venir|length }} à venir
+                            </span>
+                            {% endif %}
+                            {% if affectations_terminees|length > 0 %}
+                            <span class="badge bg-secondary bg-opacity-10 text-secondary rounded-pill px-3 py-1">
+                                <i class="bi bi-check-circle me-1"></i>{{ affectations_terminees|length }} terminée(s)
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if not has_affectations %}
+<div class="text-center py-5">
+    <i class="bi bi-calendar-x display-6 text-muted mb-3"></i>
+    <h4 class="text-muted mb-2">Aucune affectation trouvée</h4>
+    <p class="text-muted mb-4">Vous n'avez pas encore d'affectation de véhicule</p>
+</div>
+{% else %}
+    {# À venir #}
+    {% if affectations_a_venir|length > 0 %}
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-warning bg-opacity-10 border-0 py-4">
+            <div class="d-flex align-items-center gap-3">
+                <div class="bg-warning text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                    <i class="bi bi-clock-fill"></i>
+                </div>
+                <div>
+                    <h5 class="mb-1 text-warning fw-semibold">Affectations à venir</h5>
+                    <p class="text-warning mb-0 small"><i class="bi bi-info-circle me-1"></i>{{ affectations_a_venir|length }} affectation(s) programmée(s)</p>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr><th class="ps-4 py-3 fw-semibold text-muted border-0">Véhicule</th><th class="py-3 fw-semibold text-muted border-0">Immatriculation</th><th class="py-3 fw-semibold text-muted border-0">Date début</th><th class="py-3 fw-semibold text-muted border-0">Statut</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for affectation in affectations_a_venir %}
+                        <tr>
+                            <td class="ps-4 py-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="bg-warning bg-opacity-10 text-warning rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                                        <i class="bi bi-car-front"></i>
+                                    </div>
+                                    <div><div class="fw-semibold">{{ affectation.vehicle.modele }}</div></div>
+                                </div>
+                            </td>
+                            <td class="py-3"><span class="fw-semibold text-dark">{{ affectation.vehicle.immatriculation }}</span></td>
+                            <td class="py-3">{{ affectation.dateDebut|date('d/m/Y') }}<div class="small text-muted">{{ affectation.dateDebut|date('H:i') }}</div></td>
+                            <td class="py-3">
+                                <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 rounded-pill px-3 py-2 d-inline-flex align-items-center gap-1">
+                                    <i class="bi bi-clock-fill"></i>À venir
+                                </span>
+                                {% set diff = date(affectation.dateDebut).diff(date('now')) %}
+                                <div class="mt-1 small text-muted">Débute dans {{ diff.days }} jour{{ diff.days > 1 ? 's' : '' }}</div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {# En cours #}
+    {% if affectations_en_cours|length > 0 %}
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-success bg-opacity-10 border-0 py-4">
+            <div class="d-flex align-items-center gap-3">
+                <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                    <i class="bi bi-play-circle-fill"></i>
+                </div>
+                <div>
+                    <h5 class="mb-1 text-success fw-semibold">Affectations en cours</h5>
+                    <p class="text-success mb-0 small"><i class="bi bi-info-circle me-1"></i>{{ affectations_en_cours|length }} affectation(s) active(s)</p>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr><th class="ps-4 py-3 fw-semibold text-muted border-0">Véhicule</th><th class="py-3 fw-semibold text-muted border-0">Immatriculation</th><th class="py-3 fw-semibold text-muted border-0">Date début</th><th class="py-3 fw-semibold text-muted border-0">Statut</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for affectation in affectations_en_cours %}
+                        <tr>
+                            <td class="ps-4 py-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                                        <i class="bi bi-car-front"></i>
+                                    </div>
+                                    <div><div class="fw-semibold">{{ affectation.vehicle.modele }}</div></div>
+                                </div>
+                            </td>
+                            <td class="py-3"><span class="fw-semibold text-dark">{{ affectation.vehicle.immatriculation }}</span></td>
+                            <td class="py-3">{{ affectation.dateDebut|date('d/m/Y') }}<div class="small text-muted">{{ affectation.dateDebut|date('H:i') }}</div></td>
+                            <td class="py-3">
+                                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-3 py-2 d-inline-flex align-items-center gap-1">
+                                    <i class="bi bi-play-circle-fill"></i>En cours
+                                </span>
+                                {% set diff = date('now').diff(date(affectation.dateDebut)) %}
+                                <div class="mt-1 small text-muted">Depuis {{ diff.days }} jour{{ diff.days > 1 ? 's' : '' }}</div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {# Terminées #}
+    {% if affectations_terminees|length > 0 %}
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-light border-0 py-4">
+            <div class="d-flex align-items-center gap-3">
+                <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                    <i class="bi bi-check-circle-fill"></i>
+                </div>
+                <div>
+                    <h5 class="mb-1 text-secondary fw-semibold">Affectations terminées</h5>
+                    <p class="text-secondary mb-0 small"><i class="bi bi-info-circle me-1"></i>{{ affectations_terminees|length }} affectation(s) terminée(s)</p>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr><th class="ps-4 py-3 fw-semibold text-muted border-0">Véhicule</th><th class="py-3 fw-semibold text-muted border-0">Immatriculation</th><th class="py-3 fw-semibold text-muted border-0">Date début</th><th class="py-3 fw-semibold text-muted border-0">Date fin</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for affectation in affectations_terminees %}
+                        <tr>
+                            <td class="ps-4 py-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="bg-secondary bg-opacity-10 text-secondary rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                                        <i class="bi bi-car-front"></i>
+                                    </div>
+                                    <div><div class="fw-semibold">{{ affectation.vehicle.modele }}</div></div>
+                                </div>
+                            </td>
+                            <td class="py-3"><span class="fw-semibold text-dark">{{ affectation.vehicle.immatriculation }}</span></td>
+                            <td class="py-3">{{ affectation.dateDebut|date('d/m/Y') }}</td>
+                            <td class="py-3">
+                                {{ affectation.dateFin|date('d/m/Y') }}
+                                {% set diff = date(affectation.dateFin).diff(date('now')) %}
+                                <div class="small text-muted">Il y a {{ diff.days }} jour{{ diff.days > 1 ? 's' : '' }}</div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+{% endif %}
+
+<style>
+    .card { border-radius: 12px; }
+    .table tbody tr { transition: background-color 0.15s ease; }
+    .table tbody tr:hover { background-color: rgba(0, 0, 0, 0.02); }
+    .badge { font-weight: 500; }
+    .display-6 { font-size: 3.5rem; }
+</style>
+{% endblock %}

@@ -1,0 +1,434 @@
+{{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+
+<div class="row g-4">
+
+    <!-- Immatriculation -->
+    <div class="col-md-6">
+        <div class="form-floating">
+            {{ form_widget(form.immatriculation, {
+                'attr': {
+                    'class': 'form-control' ~ (form.immatriculation.vars.valid ? '' : ' is-invalid'),
+                    'placeholder': 'AA-123-BB',
+                    'autofocus': 'autofocus'
+                }
+            }) }}
+            {{ form_label(form.immatriculation, null, {
+                'label_attr': {'class': 'form-label fw-semibold'}
+            }) }}
+            <div class="invalid-feedback">
+                {{ form_errors(form.immatriculation) }}
+            </div>
+            <div class="form-text">
+                <i class="bi bi-info-circle me-1"></i>
+                Format : lettres, chiffres, tirets (ex: AB-123-CD)
+            </div>
+        </div>
+    </div>
+
+    <!-- Modèle -->
+    <div class="col-md-6">
+        <div class="form-floating">
+            {{ form_widget(form.modele, {
+                'attr': {
+                    'class': 'form-control' ~ (form.modele.vars.valid ? '' : ' is-invalid'),
+                    'placeholder': 'Peugeot 308, Renault Clio...'
+                }
+            }) }}
+            {{ form_label(form.modele, null, {
+                'label_attr': {'class': 'form-label fw-semibold'}
+            }) }}
+            <div class="invalid-feedback">
+                {{ form_errors(form.modele) }}
+            </div>
+            <div class="form-text">
+                <i class="bi bi-info-circle me-1"></i>
+                Modèle complet du véhicule
+            </div>
+        </div>
+    </div>
+
+    <!-- État - VERSION CORRIGÉE AVEC FORM-FLOATING -->
+    <div class="col-md-6">
+        <div class="form-floating">
+            {{ form_widget(form.etat, {
+                'attr': {
+                    'class': 'form-select' ~ (form.etat.vars.valid ? '' : ' is-invalid'),
+                    'data-choices': 'true'
+                }
+            }) }}
+            {{ form_label(form.etat, null, {
+                'label_attr': {'class': 'form-label fw-semibold'}
+            }) }}
+            <div class="invalid-feedback">
+                {{ form_errors(form.etat) }}
+            </div>
+            <div class="form-text">
+                <i class="bi bi-info-circle me-1"></i>
+                Statut actuel du véhicule
+            </div>
+        </div>
+    </div>
+
+    <!-- Kilométrage -->
+    <div class="col-md-6">
+        <div class="form-floating">
+            {{ form_widget(form.kilometrage, {
+                'attr': {
+                    'class': 'form-control' ~ (form.kilometrage.vars.valid ? '' : ' is-invalid'),
+                    'placeholder': '0',
+                    'min': '0',
+                    'step': '1'
+                }
+            }) }}
+            {{ form_label(form.kilometrage, null, {
+                'label_attr': {'class': 'form-label fw-semibold'}
+            }) }}
+            <div class="invalid-feedback">
+                {{ form_errors(form.kilometrage) }}
+            </div>
+            <div class="form-text">
+                <i class="bi bi-info-circle me-1"></i>
+                Kilométrage actuel en kilomètres
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Section des états avec badges - CORRIGÉ POUR MATCHER LA PAGE D'ÉDITION -->
+<div class="mt-4 mb-4">
+    <div class="card border-0 bg-light-subtle shadow-sm">
+        <div class="card-body p-4">
+            <div class="d-flex align-items-center mb-3">
+                <i class="bi bi-info-circle-fill text-danger fs-5 me-2"></i>
+                <h6 class="fw-semibold mb-0 text-danger">Signification des états</h6>
+            </div>
+            
+            <div class="row g-3">
+                <!-- Disponible -->
+                <div class="col-12 col-md-6">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center me-3"
+                             style="width: 40px; height: 40px; min-width: 40px;">
+                            <i class="bi bi-check-circle-fill"></i>
+                        </div>
+                        <div>
+                            <div class="fw-semibold text-success">Disponible</div>
+                            <div class="small text-muted">Prêt à l'utilisation</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- En service - CORRIGÉ POUR ÊTRE EN BLEU -->
+                <div class="col-12 col-md-6">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center me-3"
+                             style="width: 40px; height: 40px; min-width: 40px;">
+                            <i class="bi bi-car-front-fill"></i>
+                        </div>
+                        <div>
+                            <div class="fw-semibold text-primary">En service</div>
+                            <div class="small text-muted">Actuellement utilisé</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- En panne -->
+                <div class="col-12 col-md-6">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-danger bg-opacity-10 text-danger rounded-circle d-flex align-items-center justify-content-center me-3"
+                             style="width: 40px; height: 40px; min-width: 40px;">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                        </div>
+                        <div>
+                            <div class="fw-semibold text-danger">En panne</div>
+                            <div class="small text-muted">Nécessite réparation</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- En entretien -->
+                <div class="col-12 col-md-6">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-warning bg-opacity-10 text-warning rounded-circle d-flex align-items-center justify-content-center me-3"
+                             style="width: 40px; height: 40px; min-width: 40px;">
+                            <i class="bi bi-tools"></i>
+                        </div>
+                        <div>
+                            <div class="fw-semibold text-warning">En entretien</div>
+                            <div class="small text-muted">En maintenance ou révision</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Hors service - CORRIGÉ POUR UTILISER bg-dark COMME DANS LA PAGE D'ÉDITION -->
+                <div class="col-12 col-md-6">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-dark bg-opacity-10 text-dark rounded-circle d-flex align-items-center justify-content-center me-3"
+                             style="width: 40px; height: 40px; min-width: 40px;">
+                            <i class="bi bi-slash-circle-fill"></i>
+                        </div>
+                        <div>
+                            <div class="fw-semibold text-dark">Hors service</div>
+                            <div class="small text-muted">Désactivé temporairement</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Légende -->
+            <div class="mt-3 pt-3 border-top">
+                <div class="small text-muted">
+                    <i class="bi bi-lightbulb text-warning me-1"></i>
+                    Choisissez l'état approprié pour assurer un suivi précis du véhicule.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<hr class="my-4">
+
+<!-- Boutons d'action -->
+<div class="d-flex justify-content-between align-items-center">
+    <div>
+        <a href="{{ path('app_vehicle_index') }}" 
+           class="btn btn-outline-secondary d-flex align-items-center gap-2">
+            <i class="bi bi-arrow-left"></i>
+            <span>Retour à la liste</span>
+        </a>
+    </div>
+    
+    <div class="d-flex gap-3">
+        <button type="reset" 
+                class="btn btn-outline-danger d-flex align-items-center gap-2"
+                id="resetBtn">
+            <i class="bi bi-arrow-clockwise"></i>
+            <span>Réinitialiser</span>
+        </button>
+        
+        <button type="submit" 
+                class="btn btn-danger d-flex align-items-center gap-2 px-4"
+                id="submitBtn">
+            <i class="bi bi-{{ button_icon|default('save') }}"></i>
+            <span>{{ button_label|default('Enregistrer le véhicule') }}</span>
+        </button>
+    </div>
+</div>
+
+{{ form_end(form) }}
+
+<style>
+    .form-control, .form-select {
+        border-radius: 8px;
+        border: 2px solid #e5e7eb;
+        padding: 0.75rem 1rem;
+        transition: all 0.2s ease;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #dc2626;
+        box-shadow: 0 0 0 0.25rem rgba(220, 38, 38, 0.25);
+        outline: none;
+    }
+    
+    .form-control.is-invalid, .form-select.is-invalid {
+        border-color: #dc3545;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right calc(0.375em + 0.1875rem) center;
+        background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+    }
+    
+    .form-control.is-invalid:focus, .form-select.is-invalid:focus {
+        border-color: #dc3545;
+        box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
+    }
+    
+    .form-floating > label {
+        color: #6c757d;
+        padding: 1rem 0.75rem;
+    }
+    
+    .form-floating > .form-control:focus ~ label,
+    .form-floating > .form-control:not(:placeholder-shown) ~ label,
+    .form-floating > .form-select ~ label {
+        transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
+        color: #dc2626;
+        font-weight: 500;
+    }
+    
+    /* Style spécial pour le select flottant */
+    .form-floating > .form-select {
+        padding-top: 1.625rem;
+        padding-bottom: 0.625rem;
+    }
+    
+    .form-floating > .form-select ~ label {
+        transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
+    }
+    
+    .invalid-feedback {
+        display: block;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+    
+    .form-text {
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        color: #6c757d;
+    }
+    
+    .form-label {
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 0.5rem;
+    }
+    
+    .btn {
+        border-radius: 8px;
+        padding: 0.625rem 1.5rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-danger {
+        background-color: #dc2626;
+        border-color: #dc2626;
+    }
+    
+    .btn-danger:hover {
+        background-color: #b91c1c;
+        border-color: #b91c1c;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+    }
+    
+    .btn-outline-danger:hover {
+        background-color: rgba(220, 38, 38, 0.1);
+        color: #dc2626;
+    }
+    
+    .form-floating.focused label {
+        color: #dc2626;
+    }
+    
+    .card {
+        border-radius: 12px;
+    }
+    
+    hr {
+        border: none;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, #e5e7eb, transparent);
+    }
+    
+    /* Styles pour la section des états */
+    .alert-light {
+        background-color: #f8f9fa;
+        border-color: #e9ecef;
+    }
+    
+    .badge {
+        font-weight: 500;
+        white-space: nowrap;
+    }
+    
+    .rounded-2 {
+        border-radius: 8px;
+    }
+    
+    .rounded-3 {
+        border-radius: 12px;
+    }
+    
+    /* Styles pour le sélecteur d'état avec bordure colorée */
+    .form-select.border-success {
+        border-color: #198754 !important;
+    }
+    
+    .form-select.border-primary {
+        border-color: #0d6efd !important;
+    }
+    
+    .form-select.border-danger {
+        border-color: #dc3545 !important;
+    }
+    
+    .form-select.border-warning {
+        border-color: #ffc107 !important;
+    }
+    
+    .form-select.border-dark {
+        border-color: #212529 !important;
+    }
+    
+    /* Amélioration du dropdown */
+    .form-select option {
+        padding: 0.5rem;
+    }
+    
+    .form-select:focus option:checked {
+        background-color: #dc2626;
+        color: white;
+    }
+    
+    /* Styles pour les badges d'état dans la section info - MÊME STYLE QUE PAGE D'ÉDITION */
+    .bg-success.bg-opacity-10 {
+        background-color: rgba(25, 135, 84, 0.1) !important;
+    }
+    
+    .bg-danger.bg-opacity-10 {
+        background-color: rgba(220, 53, 69, 0.1) !important;
+    }
+    
+    .bg-primary.bg-opacity-10 {
+        background-color: rgba(13, 110, 253, 0.1) !important;
+    }
+    
+    .bg-warning.bg-opacity-10 {
+        background-color: rgba(255, 193, 7, 0.1) !important;
+    }
+    
+    /* CORRIGÉ : Utiliser bg-dark.bg-opacity-10 pour "Hors service" */
+    .bg-dark.bg-opacity-10 {
+        background-color: rgba(33, 37, 41, 0.1) !important;
+    }
+    
+    .bg-secondary.bg-opacity-10 {
+        background-color: rgba(108, 117, 125, 0.1) !important;
+    }
+    
+    /* Amélioration de la visibilité des icônes */
+    .bi-car-front-fill,
+    .bi-check-circle-fill,
+    .bi-exclamation-triangle-fill,
+    .bi-tools,
+    .bi-slash-circle-fill,
+    .bi-question-circle-fill {
+        opacity: 1 !important;
+        font-size: 1rem !important;
+    }
+    
+    /* FORCEZ "En service" à être en BLEU dans la section signification */
+    .text-primary {
+        color: #0d6efd !important;
+    }
+    
+    .text-success {
+        color: #198754 !important;
+    }
+    
+    .text-danger {
+        color: #dc3545 !important;
+    }
+    
+    .text-warning {
+        color: #ffc107 !important;
+    }
+    
+    .text-dark {
+        color: #212529 !important;
+    }
+</style>

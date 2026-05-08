@@ -1,0 +1,178 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier Entretien - ParcAuto{% endblock %}
+
+{% block page_icon 'tools' %}
+
+{% block page_title %}Modifier un entretien{% endblock %}
+
+{% block page_description %}
+    Modifiez les informations de maintenance d'un véhicule
+{% endblock %}
+
+{% block page_actions %}
+    <a href="{{ path('app_entretien_index') }}" 
+       class="btn btn-outline-secondary d-flex align-items-center gap-2">
+        <i class="bi bi-arrow-left"></i>
+        <span>Retour à la liste</span>
+    </a>
+{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col-lg-8">
+        <!-- Carte principale du formulaire -->
+        <div class="card border-0 shadow-lg">
+            <div class="card-header bg-white border-0 py-4">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="bg-warning bg-opacity-10 text-warning rounded-circle d-flex align-items-center justify-content-center"
+                         style="width: 50px; height: 50px;">
+                        <i class="bi bi-tools fs-4"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-1">Modifier l'entretien</h5>
+                        <p class="text-muted mb-0">
+                            <i class="bi bi-info-circle me-1"></i>
+                            Mettez à jour les informations de maintenance
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-body p-4 p-lg-5">
+                {{ include('entretien/_form.html.twig', {
+                    'button_label': 'Mettre à jour',
+                    'button_icon': 'check-circle'
+                }) }}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <!-- Guide d'aide -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white border-0 py-4">
+                <h5 class="mb-0 text-danger fw-semibold">
+                    <i class="bi bi-lightbulb me-2"></i>
+                    Informations importantes
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-4">
+                    <h6 class="fw-semibold mb-3 text-dark">
+                        <i class="bi bi-calendar-check text-primary me-2"></i>
+                        Date de l'entretien
+                    </h6>
+                    <ul class="small text-muted ps-3 mb-0">
+                        <li class="mb-2">
+                            Indiquez la date réelle de réalisation
+                        </li>
+                        <li class="mb-2">
+                            Précisez l'heure si disponible
+                        </li>
+                        <li>
+                            Cette date sert pour le suivi historique
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="mb-4">
+                    <h6 class="fw-semibold mb-3 text-dark">
+                        <i class="bi bi-cash-stack text-success me-2"></i>
+                        Coût de l'entretien
+                    </h6>
+                    <ul class="small text-muted ps-3 mb-0">
+                        <li class="mb-2">
+                            Inclure toutes les dépenses (pièces, main d'œuvre)
+                        </li>
+                        <li class="mb-2">
+                            TTC (toutes taxes comprises)
+                        </li>
+                        <li>
+                            Permet d'analyser les coûts de maintenance
+                        </li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h6 class="fw-semibold mb-3 text-dark">
+                        <i class="bi bi-card-checklist text-info me-2"></i>
+                        Description détaillée
+                    </h6>
+                    <ul class="small text-muted ps-3 mb-0">
+                        <li class="mb-2">
+                            Décrivez les travaux effectués
+                        </li>
+                        <li class="mb-2">
+                            Notez les pièces remplacées
+                        </li>
+                        <li>
+                            Mentionnez les observations techniques
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Actions rapides -->
+        <div class="card border-0 bg-danger bg-opacity-5">
+            <div class="card-body p-4">
+                <h6 class="fw-semibold text-danger mb-3">
+                    <i class="bi bi-lightning-charge me-2"></i>
+                    Actions rapides
+                </h6>
+                <div class="d-grid gap-2">
+                    <a href="{{ path('app_entretien_new') }}" 
+                       class="btn btn-outline-danger d-flex align-items-center justify-content-center gap-2">
+                        <i class="bi bi-plus-circle"></i>
+                        <span>Nouvel entretien</span>
+                    </a>
+                    
+                    <a href="{{ path('app_entretien_index') }}" 
+                       class="btn btn-outline-secondary d-flex align-items-center justify-content-center gap-2">
+                        <i class="bi bi-list-ul"></i>
+                        <span>Voir tous les entretiens</span>
+                    </a>
+                    
+                    {% if entretien.vehicle %}
+                        <a href="{{ path('app_vehicle_show', {'id': entretien.vehicle.id}) }}" 
+                           class="btn btn-outline-primary d-flex align-items-center justify-content-center gap-2">
+                            <i class="bi bi-car-front"></i>
+                            <span>Voir le véhicule</span>
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 12px;
+    }
+    
+    .bg-danger.bg-opacity-5 {
+        background-color: rgba(220, 38, 38, 0.05) !important;
+    }
+    
+    .alert {
+        border-radius: 8px;
+        border: none;
+    }
+    
+    .btn {
+        border-radius: 8px;
+        padding: 0.625rem 1.5rem;
+        font-weight: 500;
+    }
+    
+    .d-grid .btn {
+        width: 100%;
+    }
+    
+    .list-unstyled li {
+        margin-bottom: 0.5rem;
+    }
+</style>
+{% endblock %}

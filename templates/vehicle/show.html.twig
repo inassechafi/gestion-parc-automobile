@@ -1,0 +1,287 @@
+{% extends 'base.html.twig' %}
+
+{# Titre de la page avec l'immatriculation du véhicule #}
+{% block title %}Véhicule {{ vehicle.immatriculation }} - ParcAuto{% endblock %}
+
+{# Icône Bootstrap Icons pour le véhicule #}
+{% block page_icon 'car-front' %}
+
+{# Titre principal de la page #}
+{% block page_title %}Détails du véhicule{% endblock %}
+
+{# Description sous le titre principal #}
+{% block page_description %}
+    Informations complètes sur le véhicule {{ vehicle.immatriculation }}
+{% endblock %}
+
+{# Barre d'actions avec boutons Retour et Modifier #}
+{% block page_actions %}
+    <div class="d-flex gap-2">
+        {# Bouton pour retourner à la liste des véhicules #}
+        <a href="{{ path('app_vehicle_index') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Retour
+        </a>
+        {# Bouton pour modifier le véhicule actuel #}
+        <a href="{{ path('app_vehicle_edit', {'id': vehicle.id}) }}" class="btn btn-danger">
+            <i class="bi bi-pencil"></i> Modifier
+        </a>
+    </div>
+{% endblock %}
+
+{% block body %}
+{# Convertir l'état du véhicule en minuscules pour les comparaisons #}
+{% set vehicleEtatLower = vehicle.etat|lower %}
+
+{# ============================================================================
+   CONFIGURATION CENTRALISÉE DES ÉTATS DU VÉHICULE
+   ============================================================================
+   Cette section définit toutes les variables d'affichage pour chaque état.
+   Chaque état a :
+   - badge_class : classes CSS pour le badge (couleur de fond)
+   - text_class : classes CSS pour le texte descriptif
+   - badge_icon : icône Bootstrap pour le badge
+   - text_icon : icône Bootstrap pour le texte
+   - badge_label : libellé court pour le badge
+   - text_label : description longue pour le texte
+#}
+{% if vehicleEtatLower == 'disponible' %}
+    {% set badge_class = 'bg-success text-white' %}
+    {% set text_class = 'text-success' %}
+    {% set badge_icon = 'bi-check-circle-fill' %}
+    {% set text_icon = 'bi-check-circle' %}
+    {% set badge_label = 'Disponible' %}
+    {% set text_label = 'Prêt à l\'utilisation' %}
+{% elseif vehicleEtatLower == 'en panne' %}
+    {% set badge_class = 'bg-danger text-white' %}
+    {% set text_class = 'text-danger' %}
+    {% set badge_icon = 'bi-exclamation-triangle-fill' %}
+    {% set text_icon = 'bi-exclamation-triangle' %}
+    {% set badge_label = 'En panne' %}
+    {% set text_label = 'Nécessite réparation' %}
+{% elseif vehicleEtatLower == 'en service' %}
+    {% set badge_class = 'bg-primary text-white' %}
+    {% set text_class = 'text-primary' %}
+    {% set badge_icon = 'bi-car-front-fill' %}
+    {% set text_icon = 'bi-car-front' %}
+    {% set badge_label = 'En service' %}
+    {% set text_label = 'Actuellement en service' %}
+{% elseif vehicleEtatLower == 'en entretien' %}
+    {% set badge_class = 'bg-warning text-dark' %}
+    {% set text_class = 'text-warning' %}
+    {% set badge_icon = 'bi-tools' %}
+    {% set text_icon = 'bi-wrench' %}
+    {% set badge_label = 'En entretien' %}
+    {% set text_label = 'En cours d\'entretien' %}
+{% elseif vehicleEtatLower == 'hors service' %}
+    {% set badge_class = 'bg-dark text-white' %}
+    {% set text_class = 'text-dark' %}
+    {% set badge_icon = 'bi-slash-circle' %}
+    {% set text_icon = 'bi-slash-circle' %}
+    {% set badge_label = 'Hors service' %}
+    {% set text_label = 'Retiré du service' %}
+{% endif %}
+
+<div class="row">
+    {# ========================================================================
+       SECTION PRINCIPALE : DÉTAILS DU VÉHICULE
+       ======================================================================== #}
+    <div class="col-lg-8">
+        {# Carte principale contenant toutes les informations #}
+        <div class="card border-0 shadow-sm mb-4">
+            {# En-tête de la carte avec l'identité du véhicule #}
+            <div class="card-header bg-white border-0 py-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    {# Bloc gauche : Icône et identification du véhicule #}
+                    <div class="d-flex align-items-center gap-3">
+                        {# Icône circulaire rouge pour représenter le véhicule #}
+                        <div class="bg-danger text-white rounded-circle d-flex align-items-center justify-content-center"
+                             style="width: 70px; height: 70px;">
+                            <i class="bi bi-car-front fs-2"></i>
+                        </div>
+                        {# Informations d'identification #}
+                        <div>
+                            <h4 class="mb-1 fw-bold">{{ vehicle.immatriculation }}</h4>
+                            <p class="text-muted mb-0">{{ vehicle.modele }}</p>
+                        </div>
+                    </div>
+                    {# Bloc droit : Badge d'état du véhicule #}
+                    <div>
+                        {# Badge avec la classe et l'icône définies dans la configuration #}
+                        <span class="badge {{ badge_class }} border-0 rounded-pill px-4 py-2">
+                            <i class="bi {{ badge_icon }} me-1"></i>{{ badge_label }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            {# Corps de la carte avec les informations détaillées #}
+            <div class="card-body p-4">
+                <div class="row">
+                    {# ============================================================
+                       COLONNE GAUCHE : INFORMATIONS GÉNÉRALES
+                       ============================================================ #}
+                    <div class="col-md-6">
+                        {# Carte des informations générales #}
+                        <div class="card bg-light border-0 mb-4">
+                            <div class="card-body">
+                                {# Titre de la section #}
+                                <h6 class="fw-semibold mb-3 text-danger">
+                                    <i class="bi bi-info-circle me-2"></i>Informations générales
+                                </h6>
+                                
+                                {# Champ : Immatriculation #}
+                                <div class="mb-3">
+                                    <div class="small text-muted mb-2">Immatriculation</div>
+                                    <div class="fw-semibold">{{ vehicle.immatriculation }}</div>
+                                </div>
+                                
+                                {# Champ : Modèle #}
+                                <div class="mb-3">
+                                    <div class="small text-muted mb-2">Modèle</div>
+                                    <div class="fw-semibold">{{ vehicle.modele }}</div>
+                                </div>
+                                
+                                {# Champ : ID du véhicule #}
+                                <div class="mb-3">
+                                    <div class="small text-muted mb-2">ID du véhicule</div>
+                                    <div class="fw-semibold">#{{ vehicle.id }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {# ============================================================
+                       COLONNE DROITE : ÉTAT ET KILOMÉTRAGE
+                       ============================================================ #}
+                    <div class="col-md-6">
+                        {# Carte des informations techniques #}
+                        <div class="card bg-light border-0 mb-4">
+                            <div class="card-body">
+                                {# Titre de la section #}
+                                <h6 class="fw-semibold mb-3 text-danger">
+                                    <i class="bi bi-speedometer2 me-2"></i>État et kilométrage
+                                </h6>
+                                
+                                {# Champ : Kilométrage actuel #}
+                                <div class="mb-4">
+                                    <div class="small text-muted mb-2">Kilométrage actuel</div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="bi bi-speedometer2 text-danger"></i>
+                                        <div>
+                                            {# Affichage formaté du kilométrage avec séparateur de milliers #}
+                                            <div class="fw-bold">{{ vehicle.kilometrage | number_format(0, ',', ' ') }} km</div>
+                                            <div class="small text-muted">Total parcouru</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                {# Champ : État détaillé du véhicule #}
+                                <div class="mb-3">
+                                    <div class="small text-muted mb-2">État du véhicule</div>
+                                    <div class="fw-semibold">
+                                        {# Texte descriptif avec la classe et l'icône définies dans la configuration #}
+                                        <span class="{{ text_class }}">
+                                            <i class="bi {{ text_icon }} me-2"></i>{{ text_label }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                {# Bouton d'impression (masqué à l'impression) #}
+                <div class="text-center d-print-none mt-4">
+                    <button type="button" class="btn btn-outline-danger" onclick="window.print()">
+                        <i class="bi bi-printer me-1"></i>Imprimer la fiche
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {# ========================================================================
+       SECTION LATÉRALE : MENU D'ACTIONS
+       ======================================================================== #}
+    <div class="col-lg-4 d-print-none">
+        {# Carte des actions (masquée à l'impression) #}
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white border-0 py-3">
+                <h5 class="mb-0 text-danger fw-semibold">
+                    <i class="bi bi-lightning-charge me-2"></i>Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                {# Boutons d'action empilés verticalement #}
+                <div class="d-grid gap-2">
+                    {# Lien vers la liste de tous les véhicules #}
+                    <a href="{{ path('app_vehicle_index') }}" class="btn btn-outline-secondary">
+                        <i class="bi bi-list-ul me-1"></i>Voir tous les véhicules
+                    </a>
+                    {# Lien pour créer un nouveau véhicule #}
+                    <a href="{{ path('app_vehicle_new') }}" class="btn btn-danger">
+                        <i class="bi bi-plus-circle me-1"></i>Créer un véhicule
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    {# ========================================================================
+       STYLES POUR L'IMPRESSION
+       ======================================================================== #}
+    @media print {
+        {# Masquer les éléments non nécessaires à l'impression #}
+        .navbar, .page-actions, .d-print-none, .btn, .modal {
+            display: none !important;
+        }
+        
+        {# Ajustements pour l'impression #}
+        body {
+            padding: 20px !important;
+            background: white !important;
+        }
+        
+        {# Style simplifié des cartes pour l'impression #}
+        .card {
+            border: 1px solid #ddd !important;
+            box-shadow: none !important;
+        }
+        
+        {# Style des badges pour l'impression (noir et blanc) #}
+        .badge {
+            border: 1px solid #666 !important;
+            background: transparent !important;
+            color: black !important;
+        }
+    }
+    
+    {# Arrondir les coins des cartes #}
+    .card {
+        border-radius: 8px;
+    }
+    
+    {# ========================================================================
+       FORÇAGE DES COULEURS POUR CONTRER D'ÉVENTUELS STYLES EXTERNES
+       ========================================================================
+       Ces styles assurent que les couleurs s'affichent correctement même si
+       d'autres fichiers CSS modifient les couleurs Bootstrap.
+    #}
+    .text-primary { color: #0d6efd !important; }
+    .text-success { color: #198754 !important; }
+    .text-danger { color: #dc3545 !important; }
+    .text-warning { color: #ffc107 !important; }
+    .text-dark { color: #212529 !important; }
+    .text-secondary { color: #6c757d !important; }
+    
+    {# Forçage des couleurs de fond des badges #}
+    .badge.bg-primary { background-color: #0d6efd !important; }
+    .badge.bg-success { background-color: #198754 !important; }
+    .badge.bg-danger { background-color: #dc3545 !important; }
+    .badge.bg-warning { background-color: #ffc107 !important; }
+    .badge.bg-dark { background-color: #212529 !important; }
+    .badge.bg-secondary { background-color: #6c757d !important; }
+</style>
+{% endblock %}

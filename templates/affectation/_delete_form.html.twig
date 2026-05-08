@@ -1,0 +1,96 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Supprimer affectation{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header bg-danger text-white">
+            <h4 class="mb-0">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                Confirmation de suppression
+            </h4>
+        </div>
+        
+        <div class="card-body">
+            <p>Voulez-vous vraiment supprimer cette affectation ?</p>
+            
+            <!-- Détails de l'affectation -->
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <strong>Véhicule :</strong><br>
+                                {% if affectation.vehicle %}
+                                    {{ affectation.vehicle.immatriculation }} - {{ affectation.vehicle.modele }}
+                                {% else %}
+                                    <span class="text-muted">Non défini</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <strong>Conducteur :</strong><br>
+                                {% if affectation.conducteur %}
+                                    {{ affectation.conducteur.prenom }} {{ affectation.conducteur.nom }}
+                                {% else %}
+                                    <span class="text-muted">Non défini</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <strong>Date début :</strong><br>
+                                {{ affectation.dateDebut ? affectation.dateDebut|date('d/m/Y H:i') : '—' }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <strong>Date fin :</strong><br>
+                                {% if affectation.dateFin %}
+                                    {{ affectation.dateFin|date('d/m/Y H:i') }}
+                                {% else %}
+                                    <span class="text-success">En cours</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Avertissement si affectation active -->
+            {% if affectation.isActive() %}
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    <strong>Attention :</strong> Cette affectation est toujours active. 
+                    Il est recommandé de la terminer avant de la supprimer.
+                </div>
+            {% endif %}
+            
+            <div class="mt-4">
+                <form method="post" action="{{ path('app_affectation_delete', {'id': affectation.id}) }}">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ affectation.id) }}">
+                    
+                    <button type="submit" 
+                            class="btn btn-danger"
+                            {% if affectation.isActive() %}disabled{% endif %}
+                            onclick="return confirm('Dernière chance ! Confirmez-vous la suppression ?');">
+                        <i class="bi bi-trash me-1"></i>
+                        Oui, supprimer
+                    </button>
+                    
+                    <a href="{{ path('app_affectation_index') }}" class="btn btn-secondary ms-2">
+                        <i class="bi bi-x-circle me-1"></i>
+                        Non, annuler
+                    </a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

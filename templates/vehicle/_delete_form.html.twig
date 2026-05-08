@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Supprimer véhicule{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header bg-danger text-white">
+            <h4 class="mb-0">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                Confirmation de suppression
+            </h4>
+        </div>
+        
+        <div class="card-body">
+            <p>Voulez-vous vraiment supprimer le véhicule <strong>{{ vehicle.immatriculation }}</strong> ?</p>
+            
+            <div class="mt-4">
+                <form method="post" action="{{ path('app_vehicle_delete', {'id': vehicle.id}) }}">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ vehicle.id) }}">
+                    
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('Dernière chance ! Confirmez-vous la suppression ?');">
+                        <i class="bi bi-trash me-1"></i>
+                        Oui, supprimer
+                    </button>
+                    
+                    <a href="{{ path('app_vehicle_index') }}" class="btn btn-secondary ms-2">
+                        <i class="bi bi-x-circle me-1"></i>
+                        Non, annuler
+                    </a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

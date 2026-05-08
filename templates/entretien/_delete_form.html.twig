@@ -1,0 +1,103 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Supprimer entretien{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header bg-danger text-white">
+            <h4 class="mb-0">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                Confirmation de suppression
+            </h4>
+        </div>
+        
+        <div class="card-body">
+            <p>Voulez-vous vraiment supprimer cet entretien ?</p>
+            
+            <!-- Détails de l'entretien -->
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <strong>Date :</strong><br>
+                                {{ entretien.date ? entretien.date|date('d/m/Y H:i') : '—' }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <strong>Type :</strong><br>
+                                {{ entretien.type }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <strong>Coût :</strong><br>
+                                {{ entretien.cout|number_format(2, ',', ' ') }} DH
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <strong>Véhicule :</strong><br>
+                                {% if entretien.vehicle %}
+                                    {{ entretien.vehicle.immatriculation }} - {{ entretien.vehicle.modele }}
+                                {% else %}
+                                    <span class="text-muted">Non défini</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if entretien.description %}
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <strong>Description :</strong><br>
+                                <p class="mb-0">{{ entretien.description }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="alert alert-warning">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                <strong>Attention :</strong> Cette action est irréversible. L'historique de maintenance sera modifié.
+            </div>
+            
+            <div class="mt-4">
+                <form method="post" action="{{ path('app_entretien_delete', {'id': entretien.id}) }}">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ entretien.id) }}">
+                    
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('Dernière chance ! Confirmez-vous la suppression ?');">
+                        <i class="bi bi-trash me-1"></i>
+                        Oui, supprimer
+                    </button>
+                    
+                    <a href="{{ path('app_entretien_index') }}" class="btn btn-secondary ms-2">
+                        <i class="bi bi-x-circle me-1"></i>
+                        Non, annuler
+                    </a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 10px;
+        border: 1px solid rgba(0,0,0,0.1);
+    }
+    
+    .alert {
+        border-radius: 8px;
+        border-left: 4px solid #ffc107;
+    }
+</style>
+{% endblock %}

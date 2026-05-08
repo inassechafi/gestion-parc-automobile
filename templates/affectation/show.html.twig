@@ -1,0 +1,470 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Affectation #{{ affectation.id }} - ParcAuto{% endblock %}
+
+{% block page_icon 'person-badge' %}
+
+{% block page_title %}Détails de l'affectation{% endblock %}
+
+{% block page_description %}
+    Informations complètes sur l'affectation #{{ affectation.id }}
+{% endblock %}
+
+{% block page_actions %}
+    <div class="d-flex gap-2">
+        <a href="{{ path('app_affectation_index') }}" class="btn btn-outline-secondary d-flex align-items-center gap-2">
+            <i class="bi bi-arrow-left"></i>
+            <span>Retour à la liste</span>
+        </a>
+        <a href="{{ path('app_affectation_edit', {'id': affectation.id}) }}" class="btn btn-danger d-flex align-items-center gap-2">
+            <i class="bi bi-pencil"></i>
+            <span>Modifier</span>
+        </a>
+    </div>
+{% endblock %}
+
+{% block body %}
+<div class="row">
+    <!-- Informations principales -->
+    <div class="col-lg-8">
+        <!-- Carte des détails -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 py-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="bg-danger bg-opacity-10 text-danger rounded-circle d-flex align-items-center justify-content-center"
+                             style="width: 60px; height: 60px;">
+                            <i class="bi bi-person-badge fs-3"></i>
+                        </div>
+                        <div>
+                            <h4 class="mb-1">Affectation #{{ affectation.id }}</h4>
+                            <p class="text-muted mb-0">
+                                {% set now = date('now') %}
+                                {% if affectation.dateFin is null or affectation.dateFin > now %}
+                                    <span class="text-success">●</span> En cours
+                                {% else %}
+                                    <span class="text-secondary">●</span> Terminée
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    <div>
+                        {% set now = date('now') %}
+                        {% if affectation.dateFin is null or affectation.dateFin > now %}
+                            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-4 py-2 d-inline-flex align-items-center gap-2">
+                                <i class="bi bi-play-circle-fill"></i>
+                                Affectation active
+                            </span>
+                        {% else %}
+                            <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 rounded-pill px-4 py-2 d-inline-flex align-items-center gap-2">
+                                <i class="bi bi-check-circle-fill"></i>
+                                Affectation terminée
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-body p-4 p-lg-5">
+                <div class="row">
+                    <!-- Informations véhicule -->
+                    <div class="col-md-6">
+                        <div class="card bg-light border-0 mb-4">
+                            <div class="card-body">
+                                <h6 class="fw-semibold mb-3 text-danger">
+                                    <i class="bi bi-car-front me-2"></i>
+                                    Informations véhicule
+                                </h6>
+                                
+                                {% if affectation.vehicle is defined and affectation.vehicle is not null %}
+                                    <div class="mb-3">
+                                        <div class="small text-muted mb-2">Véhicule</div>
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div class="bg-danger bg-opacity-10 text-danger rounded-circle d-flex align-items-center justify-content-center"
+                                                 style="width: 40px; height: 40px;">
+                                                <i class="bi bi-car-front"></i>
+                                            </div>
+                                            <div>
+                                                <div class="fw-semibold fs-5">{{ affectation.vehicle.immatriculation }}</div>
+                                                <div class="small text-muted">{{ affectation.vehicle.modele }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <div class="small text-muted mb-2">État</div>
+                                        <div class="fw-semibold">
+                                            {% if affectation.vehicle.etat is defined %}
+                                                {% if affectation.vehicle.etat == 'Disponible' %}
+                                                    <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-3 py-2 d-inline-flex align-items-center gap-2">
+                                                        <i class="bi bi-check-circle-fill"></i>
+                                                        Disponible
+                                                    </span>
+                                                {% elseif affectation.vehicle.etat == 'En panne' %}
+                                                    <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill px-3 py-2 d-inline-flex align-items-center gap-2">
+                                                        <i class="bi bi-exclamation-triangle-fill"></i>
+                                                        En panne
+                                                    </span>
+                                                {% elseif affectation.vehicle.etat == 'En service' %}
+                                                    <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 rounded-pill px-3 py-2 d-inline-flex align-items-center gap-2">
+                                                        <i class="bi bi-tools"></i>
+                                                        En service
+                                                    </span>
+                                                {% elseif affectation.vehicle.etat == 'Affecté' %}
+                                                    <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 rounded-pill px-3 py-2 d-inline-flex align-items-center gap-2">
+                                                        <i class="bi bi-person-check"></i>
+                                                        Affecté
+                                                    </span>
+                                                {% else %}
+                                                    <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 rounded-pill px-3 py-2">
+                                                        {{ affectation.vehicle.etat }}
+                                                    </span>
+                                                {% endif %}
+                                            {% else %}
+                                                <span class="text-muted">Non défini</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <div class="small text-muted mb-2">Kilométrage</div>
+                                        <div class="fw-semibold">
+                                            <i class="bi bi-speedometer2 text-muted me-1"></i>
+                                            {{ affectation.vehicle.kilometrage|default(0)|number_format(0, ',', ' ') }} km
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div class="alert alert-warning small mb-0">
+                                        <i class="bi bi-exclamation-triangle me-1"></i>
+                                        Aucun véhicule associé à cette affectation
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Informations conducteur (CORRECTION ICI) -->
+                    <div class="col-md-6">
+                        <div class="card bg-light border-0 mb-4">
+                            <div class="card-body">
+                                <h6 class="fw-semibold mb-3 text-danger">
+                                    <i class="bi bi-person me-2"></i>
+                                    Informations conducteur
+                                </h6>
+                                
+                                {% if affectation.conducteur is defined and affectation.conducteur is not null %}
+                                    <div class="mb-3">
+                                        <div class="small text-muted mb-2">Conducteur</div>
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div class="bg-info bg-opacity-10 text-info rounded-circle d-flex align-items-center justify-content-center"
+                                                 style="width: 40px; height: 40px;">
+                                                <i class="bi bi-person"></i>
+                                            </div>
+                                            <div>
+                                                <div class="fw-semibold fs-5">{{ affectation.conducteur.prenom }} {{ affectation.conducteur.nom }}</div>
+                                                <div class="small text-muted">{{ affectation.conducteur.email }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <div class="small text-muted mb-2">Contact</div>
+                                        <div class="fw-semibold">
+                                            <i class="bi bi-envelope text-muted me-1"></i>
+                                            {{ affectation.conducteur.email }}
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <div class="small text-muted mb-2">Identifiant</div>
+                                        <div class="fw-semibold">
+                                            <i class="bi bi-person-badge text-muted me-1"></i>
+                                            #{{ affectation.conducteur.id }}
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div class="alert alert-warning small mb-0">
+                                        <i class="bi bi-exclamation-triangle me-1"></i>
+                                        Aucun conducteur associé à cette affectation
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Période d'affectation -->
+                <div class="card bg-light border-0">
+                    <div class="card-body">
+                        <h6 class="fw-semibold mb-3 text-danger">
+                            <i class="bi bi-calendar-event me-2"></i>
+                            Période d'affectation
+                        </h6>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <div class="small text-muted mb-2">Date de début</div>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center"
+                                             style="width: 40px; height: 40px;">
+                                            <i class="bi bi-play-fill"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-semibold fs-5">
+                                                {{ affectation.dateDebut ? affectation.dateDebut|date('d/m/Y') : 'Non définie' }}
+                                            </div>
+                                            <div class="small text-muted">
+                                                {{ affectation.dateDebut ? affectation.dateDebut|date('H:i') : '' }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <div class="small text-muted mb-2">Date de fin</div>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="bg-secondary bg-opacity-10 text-secondary rounded-circle d-flex align-items-center justify-content-center"
+                                             style="width: 40px; height: 40px;">
+                                            <i class="bi bi-flag-fill"></i>
+                                        </div>
+                                        <div>
+                                            {% if affectation.dateFin %}
+                                                <div class="fw-semibold fs-5">{{ affectation.dateFin|date('d/m/Y') }}</div>
+                                                <div class="small text-muted">{{ affectation.dateFin|date('H:i') }}</div>
+                                            {% else %}
+                                                <div class="fw-semibold fs-5 text-success">En cours</div>
+                                                <div class="small text-muted">Aucune date de fin définie</div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {% if affectation.dateDebut and affectation.dateFin %}
+                            {% set diff = date(affectation.dateFin).diff(date(affectation.dateDebut)) %}
+                            <div class="mt-3 pt-3 border-top">
+                                <div class="small text-muted mb-2">Durée totale</div>
+                                <div class="fw-semibold">
+                                    <i class="bi bi-clock-history text-muted me-1"></i>
+                                    {{ diff.days }} jour{{ diff.days > 1 ? 's' : '' }}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pied de carte avec actions -->
+            <div class="card-footer bg-white border-0 border-top py-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="text-muted small">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Affectation #{{ affectation.id }}
+                    </div>
+                    <div class="d-flex gap-2">
+                        <a href="{{ path('app_affectation_edit', {'id': affectation.id}) }}" 
+                           class="btn btn-outline-danger d-flex align-items-center gap-2">
+                            <i class="bi bi-pencil"></i>
+                            <span>Modifier</span>
+                        </a>
+                        <a href="{{ path('app_affectation_delete_confirm', {'id': affectation.id}) }}"
+                        class="btn btn-danger d-flex align-items-center gap-2">
+                            <i class="bi bi-trash"></i>
+                            <span>Supprimer</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Informations complémentaires -->
+    <div class="col-lg-4">
+        <!-- Résumé -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white border-0 py-4">
+                <h5 class="mb-0 text-danger fw-semibold">
+                    <i class="bi bi-info-circle me-2"></i>
+                    Résumé
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <div class="small text-muted mb-2">Statut</div>
+                    <div class="fw-semibold">
+                        {% set now = date('now') %}
+                        {% if affectation.dateFin is null or affectation.dateFin > now %}
+                            <span class="text-success">
+                                <i class="bi bi-play-circle me-1"></i>
+                                En cours
+                            </span>
+                        {% else %}
+                            <span class="text-secondary">
+                                <i class="bi bi-check-circle me-1"></i>
+                                Terminée
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <div class="small text-muted mb-2">Identifiant</div>
+                    <div class="fw-semibold">#{{ affectation.id }}</div>
+                </div>
+                
+                <div>
+                    <div class="small text-muted mb-2">Dates</div>
+                    <div class="fw-semibold">
+                        {{ affectation.dateDebut ? affectation.dateDebut|date('d/m/Y') : 'Non définie' }}
+                        {% if affectation.dateFin %}
+                            → {{ affectation.dateFin|date('d/m/Y') }}
+                        {% else %}
+                            → En cours
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Navigation rapide -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 py-4">
+                <h5 class="mb-0 text-danger fw-semibold">
+                    <i class="bi bi-arrow-left-right me-2"></i>
+                    Navigation
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ path('app_affectation_index') }}" 
+                       class="btn btn-outline-secondary d-flex align-items-center justify-content-between p-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="bg-secondary bg-opacity-10 text-secondary rounded-circle d-flex align-items-center justify-content-center"
+                                 style="width: 40px; height: 40px;">
+                                <i class="bi bi-list-ul"></i>
+                            </div>
+                            <div class="text-start">
+                                <div class="fw-semibold">Liste des affectations</div>
+                            </div>
+                        </div>
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                    
+                    {% if affectation.vehicle is defined and affectation.vehicle is not null %}
+                    <a href="{{ path('app_vehicle_show', {'id': affectation.vehicle.id}) }}" 
+                       class="btn btn-outline-danger d-flex align-items-center justify-content-between p-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="bg-danger bg-opacity-10 text-danger rounded-circle d-flex align-items-center justify-content-center"
+                                 style="width: 40px; height: 40px;">
+                                <i class="bi bi-car-front"></i>
+                            </div>
+                            <div class="text-start">
+                                <div class="fw-semibold">Voir le véhicule</div>
+                            </div>
+                        </div>
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de suppression -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header border-0">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="bg-danger bg-opacity-10 text-danger rounded-circle d-flex align-items-center justify-content-center"
+                         style="width: 40px; height: 40px;">
+                        <i class="bi bi-exclamation-triangle"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title text-danger mb-0">Supprimer l'affectation</h5>
+                        <p class="text-muted small mb-0">ID : #{{ affectation.id }}</p>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            
+            <div class="modal-body py-4">
+                <p class="mb-3">Êtes-vous sûr de vouloir supprimer cette affectation ?</p>
+                
+                <div class="alert alert-warning small">
+                    <div class="d-flex align-items-start gap-2">
+                        <i class="bi bi-info-circle"></i>
+                        <div>
+                            <strong>Attention :</strong> Cette action est irréversible.
+                        </div>
+                    </div>
+                </div>
+                
+                {{ include('affectation/_delete_form.html.twig') }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+    
+    .card:hover {
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+    
+    .badge {
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+    }
+    
+    .btn {
+        border-radius: 8px;
+        padding: 0.625rem 1.25rem;
+        font-weight: 500;
+    }
+    
+    .btn-outline-danger:hover {
+        background-color: rgba(220, 38, 38, 0.1);
+    }
+    
+    .modal-content {
+        border-radius: 12px;
+    }
+    
+    .alert-warning {
+        background-color: rgba(255, 193, 7, 0.1);
+        border-color: rgba(255, 193, 7, 0.2);
+        color: #856404;
+    }
+    
+    .fs-5 {
+        font-size: 1.25rem;
+    }
+    
+    .fs-3 {
+        font-size: 1.75rem;
+    }
+    
+    @media (max-width: 992px) {
+        .btn span {
+            display: none;
+        }
+        
+        .btn {
+            padding: 0.5rem;
+            width: 40px;
+            height: 40px;
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}

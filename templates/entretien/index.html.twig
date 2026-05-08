@@ -1,0 +1,361 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Entretiens - ParcAuto{% endblock %}
+{% block page_icon 'tools' %}
+{% block page_title %}Gestion des Entretiens{% endblock %}
+{% block page_description %}Consultez et gérez l'historique de maintenance du parc automobile{% endblock %}
+
+{% block page_actions %}
+    <a href="{{ path('app_entretien_new') }}" class="btn btn-danger d-flex align-items-center gap-2">
+        <i class="bi bi-plus-circle"></i><span>Nouvel entretien</span>
+    </a>
+{% endblock %}
+
+{% block body %}
+<div class="row mb-4">
+    <div class="col-12">
+        {# Flash messages avec classes simple-message #}
+        {% for flash in app.flashes('success') %}
+            <div class="simple-message success mb-3">
+                <i class="bi bi-check-circle me-2"></i>{{ flash }}
+            </div>
+        {% endfor %}
+        
+        {% for flash in app.flashes('error') %}
+            <div class="simple-message danger mb-3">
+                <i class="bi bi-exclamation-circle me-2"></i>{{ flash }}
+            </div>
+        {% endfor %}
+        
+        {% for flash in app.flashes('warning') %}
+            <div class="simple-message warning mb-3">
+                <i class="bi bi-exclamation-triangle me-2"></i>{{ flash }}
+            </div>
+        {% endfor %}
+        
+        <div class="card border-0 bg-danger bg-opacity-5">
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="mb-1 text-danger fw-semibold">
+                            <i class="bi bi-info-circle me-2"></i>Aperçu des entretiens
+                        </h6>
+                        <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-3 py-1">
+                            <i class="bi bi-tools me-1"></i>{{ entretiens|length }} entretien(s)
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-header bg-white border-0 py-4">
+        <div>
+            <h5 class="mb-1 text-dark fw-semibold">
+                <i class="bi bi-list-check me-2"></i>Liste des entretiens
+            </h5>
+            <p class="text-muted small mb-0">
+                <i class="bi bi-clock-history me-1"></i>Historique complet de maintenance
+            </p>
+        </div>
+    </div>
+    
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light text-uppercase small">
+                    <tr>
+                        <th class="ps-4 py-3 fw-semibold text-muted border-0">ID</th>
+                        <th class="py-3 fw-semibold text-muted border-0">Date</th>
+                        <th class="py-3 fw-semibold text-muted border-0">Véhicule</th>
+                        <th class="py-3 fw-semibold text-muted border-0">Type</th>
+                        <th class="py-3 fw-semibold text-muted border-0">Coût</th>
+                        <th class="py-3 fw-semibold text-muted border-0 text-end pe-4">Actions</th>
+                    </tr>
+                </thead>
+                
+                <tbody>
+                {% for entretien in entretiens %}
+                    <tr class="border-bottom">
+                        <td class="ps-4 py-3">
+                            <div class="fw-semibold text-dark">#{{ entretien.id }}</div>
+                        </td>
+
+                        <td class="py-3">
+                            <div class="fw-medium text-dark">
+                                {{ entretien.date ? entretien.date|date('d/m/Y') : '—' }}
+                            </div>
+                            {% if entretien.date %}
+                                <div class="small text-muted">
+                                    {{ entretien.date|date('H:i') }}
+                                </div>
+                            {% endif %}
+                        </td>
+
+                        <td class="py-3">
+                            {% if entretien.vehicle %}
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="bg-danger bg-opacity-10 text-danger rounded-circle d-flex align-items-center justify-content-center"
+                                         style="width: 32px; height: 32px;">
+                                        <i class="bi bi-car-front"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-semibold">{{ entretien.vehicle.immatriculation }}</div>
+                                        <div class="small text-muted">{{ entretien.vehicle.modele }}</div>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <span class="text-muted fst-italic">— Véhicule non spécifié —</span>
+                            {% endif %}
+                        </td>
+
+                        <td class="py-3">
+                            {% if entretien.type %}
+                                {% set badgeStyle = '' %}
+                                {% set icon = '' %}
+                                
+                                {% if entretien.type == 'Révision' %}
+                                    {% set badgeStyle = 'badge-revision' %}
+                                    {% set icon = 'bi-gear-fill' %}
+                                {% elseif entretien.type == 'Réparation' %}
+                                    {% set badgeStyle = 'badge-reparation' %}
+                                    {% set icon = 'bi-tools' %}
+                                {% elseif entretien.type == 'Entretien' %}
+                                    {% set badgeStyle = 'badge-entretien' %}
+                                    {% set icon = 'bi-wrench' %}
+                                {% elseif entretien.type == 'Contrôle technique' %}
+                                    {% set badgeStyle = 'badge-controle' %}
+                                    {% set icon = 'bi-clipboard-check' %}
+                                {% elseif entretien.type == 'Vidange' %}
+                                    {% set badgeStyle = 'badge-vidange' %}
+                                    {% set icon = 'bi-droplet-fill' %}
+                                {% else %}
+                                    {% set badgeStyle = 'badge-default' %}
+                                {% endif %}
+                                
+                                <span class="type-badge {{ badgeStyle }} d-inline-flex align-items-center gap-1 fw-semibold">
+                                    {% if icon %}<i class="bi {{ icon }}"></i>{% endif %}
+                                    {{ entretien.type }}
+                                </span>
+                            {% endif %}
+                        </td>
+
+                        <td class="py-3">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bi bi-cash-coin text-muted"></i>
+                                <span class="fw-bold">{{ entretien.cout|number_format(2, ',', ' ') }} DH</span>
+                            </div>
+                            {% if entretien.description and entretien.description|length > 0 %}
+                                <div class="small text-muted mt-1">
+                                    <i class="bi bi-chat-left-text"></i>
+                                    {{ entretien.description|slice(0, 50) }}{{ entretien.description|length > 50 ? '...' : '' }}
+                                </div>
+                            {% endif %}
+                        </td>
+
+                        <td class="text-end pe-4 py-3">
+                            <div class="d-flex justify-content-end gap-2">
+                                <div class="dropdown">
+                                    <button type="button"
+                                            class="btn btn-outline-dark btn-sm d-flex align-items-center gap-1"
+                                            data-bs-toggle="dropdown"
+                                            aria-expanded="false"
+                                            data-bs-toggle="tooltip"
+                                            title="Actions">
+                                        <i class="bi bi-three-dots-vertical"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end shadow">
+                                        <li>
+                                            <a class="dropdown-item d-flex align-items-center gap-2"
+                                               href="{{ path('app_entretien_show', {'id': entretien.id}) }}">
+                                                <i class="bi bi-eye text-primary"></i>
+                                                <span>Voir détails</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item d-flex align-items-center gap-2"
+                                               href="{{ path('app_entretien_edit', {'id': entretien.id}) }}">
+                                                <i class="bi bi-pencil text-success"></i>
+                                                <span>Modifier</span>
+                                            </a>
+                                        </li>
+                                        {% if entretien.vehicle %}
+                                            <li>
+                                                <a class="dropdown-item d-flex align-items-center gap-2"
+                                                   href="{{ path('app_vehicle_show', {'id': entretien.vehicle.id}) }}">
+                                                    <i class="bi bi-car-front text-danger"></i>
+                                                    Voir le véhicule
+                                                </a>
+                                            </li>
+                                        {% endif %}
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <a class="dropdown-item d-flex align-items-center gap-2 text-danger"
+                                            href="{{ path('app_entretien_delete_confirm', {'id': entretien.id}) }}">
+                                                <i class="bi bi-trash"></i>
+                                                Supprimer
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5">
+                            <div class="py-5">
+                                <div class="text-muted mb-3">
+                                    <i class="bi bi-tools display-6"></i>
+                                </div>
+                                <h4 class="text-muted mb-2">Aucun entretien trouvé</h4>
+                                <p class="text-muted mb-4">Commencez par enregistrer le premier entretien</p>
+                                <a href="{{ path('app_entretien_new') }}" class="btn btn-danger">
+                                    <i class="bi bi-plus-circle me-1"></i>
+                                    Ajouter un entretien
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    {% if entretiens|length > 0 %}
+    <div class="card-footer bg-white border-0 border-top pt-3">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="text-muted small">
+                <i class="bi bi-info-circle me-1"></i>
+                Affichage de {{ entretiens|length }} entretien(s)
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .simple-message {
+        padding: 12px 20px;
+        border-radius: var(--radius-md);
+        margin-bottom: var(--space-md);
+        border-left: 4px solid;
+        font-weight: 500;
+        opacity: 1;
+    }
+    
+    .simple-message.success {
+        background-color: rgba(25, 135, 84, 0.1);
+        border-left-color: #198754;
+        color: #0a3622;
+    }
+    
+    .simple-message.danger {
+        background-color: rgba(220, 53, 69, 0.1);
+        border-left-color: #dc3545;
+        color: #58151c;
+    }
+    
+    .simple-message.warning {
+        background-color: rgba(255, 193, 7, 0.1);
+        border-left-color: #ffc107;
+        color: #664d03;
+    }
+    
+    .simple-message i {
+        font-size: 1.1em;
+    }
+    
+    .table tbody tr {
+        transition: background-color 0.15s ease;
+    }
+    
+    .table tbody tr:hover {
+        background-color: rgba(220, 38, 38, 0.03);
+    }
+    
+    .badge {
+        font-weight: 600;
+        letter-spacing: 0.3px;
+        font-size: 0.85em;
+    }
+    
+    .dropdown-menu {
+        border-radius: 8px;
+        border: 1px solid rgba(0,0,0,.1);
+        min-width: 200px;
+    }
+    
+    .btn-sm {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.875rem;
+    }
+    
+    .modal-content {
+        border-radius: 12px;
+    }
+    
+    .alert-warning {
+        background-color: rgba(255, 193, 7, 0.1);
+        border-color: rgba(255, 193, 7, 0.2);
+    }
+    
+    .type-badge {
+        padding: 0.35rem 0.9rem;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        border: 1px solid transparent;
+        transition: all 0.2s ease;
+        animation: fadeIn 0.3s ease-out;
+    }
+    
+    .type-badge:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .badge-revision {
+        background-color: rgba(13, 110, 253, 0.12);
+        color: #0d6efd;
+        border-color: rgba(13, 110, 253, 0.3);
+    }
+    
+    .badge-reparation {
+        background-color: rgba(220, 53, 69, 0.12);
+        color: #dc3545;
+        border-color: rgba(220, 53, 69, 0.3);
+    }
+    
+    .badge-entretien {
+        background-color: rgba(255, 193, 7, 0.12);
+        color: #ffc107;
+        border-color: rgba(255, 193, 7, 0.3);
+    }
+    
+    .badge-controle {
+        background-color: rgba(13, 202, 240, 0.12);
+        color: #0dcaf0;
+        border-color: rgba(13, 202, 240, 0.3);
+    }
+    
+    .badge-vidange {
+        background-color: rgba(25, 135, 84, 0.12);
+        color: #198754;
+        border-color: rgba(25, 135, 84, 0.3);
+    }
+    
+    .badge-default {
+        background-color: rgba(108, 117, 125, 0.12);
+        color: #6c757d;
+        border-color: rgba(108, 117, 125, 0.3);
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(5px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,449 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard - ParcAuto{% endblock %}
+
+{% block page_icon 'speedometer2' %}
+
+{% block page_title %}Tableau de bord{% endblock %}
+
+{% block page_description %}
+    Vue d'ensemble et statistiques du parc automobile
+{% endblock %}
+
+{% block body %}
+{# ====================================================== #}
+{# CHANGEMENT 1 : CALCUL DES STATISTIQUES RÉELLES         #}
+{# (Ajout de ces lignes au début du bloc body)           #}
+{# ====================================================== #}
+
+{# Vérifier que vehicle_stats est un tableau #}
+{% set vehicle_stats = vehicle_stats is iterable ? vehicle_stats : [] %}
+
+{# Calculer les pourcentages réels #}
+{% if total_vehicles > 0 %}
+    {# Disponible - déjà calculé dans le contrôleur #}
+    {% set disponible_pourcentage = availability_rate %}
+    
+    {# Autres états - calcul depuis vehicle_stats #}
+    {% set en_panne_pourcentage = ((vehicle_stats['en panne'] ?? 0) / total_vehicles * 100)|round(1) %}
+    {% set en_service_pourcentage = ((vehicle_stats['en service'] ?? 0) / total_vehicles * 100)|round(1) %}
+    {% set en_entretien_pourcentage = ((vehicle_stats['en entretien'] ?? 0) / total_vehicles * 100)|round(1) %}
+    {% set hors_service_pourcentage = ((vehicle_stats['hors service'] ?? 0) / total_vehicles * 100)|round(1) %}
+{% else %}
+    {% set disponible_pourcentage = 0 %}
+    {% set en_panne_pourcentage = 0 %}
+    {% set en_service_pourcentage = 0 %}
+    {% set en_entretien_pourcentage = 0 %}
+    {% set hors_service_pourcentage = 0 %}
+{% endif %}
+
+<div class="row mb-4">
+    <!-- Métriques principales -->
+    <div class="col-12">
+        <div class="row g-4">
+            <!-- Véhicules -->
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm dashboard-card h-100">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center justify-content-between mb-4">
+                            <div class="bg-danger bg-opacity-10 text-danger rounded-circle d-flex align-items-center justify-content-center"
+                                 style="width: 64px; height: 64px;">
+                                <i class="bi bi-car-front fs-3"></i>
+                            </div>
+                            <div class="text-end">
+                                <div class="display-4 fw-bold text-danger mb-0">
+                                    {{ total_vehicles }}
+                                </div>
+                                <div class="small text-muted">Total</div>
+                            </div>
+                        </div>
+                        <h5 class="fw-semibold mb-2">Véhicules</h5>
+                        <p class="text-muted small mb-3">Véhicules dans le parc automobile</p>
+                        <a href="{{ path('app_vehicle_index') }}" class="btn btn-outline-danger w-100 d-flex align-items-center justify-content-center gap-2">
+                            <i class="bi bi-eye"></i>
+                            Voir les véhicules
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Affectations -->
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm dashboard-card h-100">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center justify-content-between mb-4">
+                            <div class="bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center"
+                                 style="width: 64px; height: 64px;">
+                                <i class="bi bi-person-check fs-3"></i>
+                            </div>
+                            <div class="text-end">
+                                <div class="display-4 fw-bold text-success mb-0">
+                                    {{ total_affectations }}
+                                </div>
+                                <div class="small text-muted">Total</div>
+                            </div>
+                        </div>
+                        <h5 class="fw-semibold mb-2">Affectations</h5>
+                        <p class="text-muted small mb-3">Affectations enregistrées</p>
+                        <a href="{{ path('app_affectation_index') }}" class="btn btn-outline-success w-100 d-flex align-items-center justify-content-center gap-2">
+                            <i class="bi bi-eye"></i>
+                            Voir les affectations
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Entretiens -->
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm dashboard-card h-100">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center justify-content-between mb-4">
+                            <div class="bg-warning bg-opacity-10 text-warning rounded-circle d-flex align-items-center justify-content-center"
+                                 style="width: 64px; height: 64px;">
+                                <i class="bi bi-tools fs-3"></i>
+                            </div>
+                            <div class="text-end">
+                                <div class="display-4 fw-bold text-warning mb-0">
+                                    {{ total_entretiens }}
+                                </div>
+                                <div class="small text-muted">Total</div>
+                            </div>
+                        </div>
+                        <h5 class="fw-semibold mb-2">Entretiens</h5>
+                        <p class="text-muted small mb-3">Historique de maintenance</p>
+                        <a href="{{ path('app_entretien_index') }}" class="btn btn-outline-warning w-100 d-flex align-items-center justify-content-center gap-2">
+                            <i class="bi bi-eye"></i>
+                            Voir les entretiens
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Section des statistiques et actions -->
+<div class="row g-4">
+    <!-- État du parc -->
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white border-0 py-4">
+                <h5 class="mb-0 text-danger fw-semibold">
+                    <i class="bi bi-pie-chart me-2"></i>
+                    Vue d'ensemble du parc
+                </h5>
+            </div>
+            <div class="card-body p-4">
+                {% if total_vehicles > 0 %}
+                    <div class="row align-items-center">
+                        <!-- Statistiques visuelles -->
+                        <div class="col-md-6">
+                            <div class="mb-4">
+                                <h6 class="fw-semibold mb-3 text-dark">Distribution des véhicules</h6>
+                                <div class="space-y-3">
+                                    
+                                    {# ====================================================== #}
+                                    {# CHANGEMENT 2 : POURCENTAGES DYNAMIQUES                #}
+                                    {# (Remplacement des valeurs fixes 70%, 10%, etc.)       #}
+                                    {# ====================================================== #}
+                                    
+                                    <!-- Disponible -->
+                                    <div>
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <span class="small">
+                                                <i class="bi bi-check-circle text-success me-1"></i>
+                                                Véhicules disponibles
+                                            </span>
+                                            <span class="small fw-semibold">{{ disponible_pourcentage }}%</span>
+                                        </div>
+                                        <div class="progress" style="height: 8px;">
+                                            <div class="progress-bar bg-success" role="progressbar" 
+                                                 style="width: {{ disponible_pourcentage }}%">
+                                                <span class="visually-hidden">{{ disponible_pourcentage }}%</span>
+                                            </div>
+                                        </div>
+                                        <div class="small text-muted mt-1">
+                                            {{ available_vehicles }} / {{ total_vehicles }} véhicules
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- En panne -->
+                                    <div>
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <span class="small">
+                                                <i class="bi bi-exclamation-triangle text-danger me-1"></i>
+                                                En panne
+                                            </span>
+                                            <span class="small fw-semibold">{{ en_panne_pourcentage }}%</span>
+                                        </div>
+                                        <div class="progress" style="height: 8px;">
+                                            <div class="progress-bar bg-danger" role="progressbar" 
+                                                 style="width: {{ en_panne_pourcentage }}%">
+                                                <span class="visually-hidden">{{ en_panne_pourcentage }}%</span>
+                                            </div>
+                                        </div>
+                                        <div class="small text-muted mt-1">
+                                            {{ vehicle_stats['en panne'] ?? 0 }} véhicule(s)
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- En service -->
+                                    <div>
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <span class="small">
+                                                <i class="bi bi-car-front text-primary me-1"></i>
+                                                En service
+                                            </span>
+                                            <span class="small fw-semibold">{{ en_service_pourcentage }}%</span>
+                                        </div>
+                                        <div class="progress" style="height: 8px;">
+                                            <div class="progress-bar bg-primary" role="progressbar" 
+                                                 style="width: {{ en_service_pourcentage }}%">
+                                                <span class="visually-hidden">{{ en_service_pourcentage }}%</span>
+                                            </div>
+                                        </div>
+                                        <div class="small text-muted mt-1">
+                                            {{ vehicle_stats['en service'] ?? 0 }} véhicule(s)
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- En entretien -->
+                                    <div>
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <span class="small">
+                                                <i class="bi bi-tools text-warning me-1"></i>
+                                                En entretien
+                                            </span>
+                                            <span class="small fw-semibold">{{ en_entretien_pourcentage }}%</span>
+                                        </div>
+                                        <div class="progress" style="height: 8px;">
+                                            <div class="progress-bar bg-warning" role="progressbar" 
+                                                 style="width: {{ en_entretien_pourcentage }}%">
+                                                <span class="visually-hidden">{{ en_entretien_pourcentage }}%</span>
+                                            </div>
+                                        </div>
+                                        <div class="small text-muted mt-1">
+                                            {{ vehicle_stats['en entretien'] ?? 0 }} véhicule(s)
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Hors service -->
+                                    <div>
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <span class="small">
+                                                <i class="bi bi-slash-circle text-dark me-1"></i>
+                                                Hors service
+                                            </span>
+                                            <span class="small fw-semibold">{{ hors_service_pourcentage }}%</span>
+                                        </div>
+                                        <div class="progress" style="height: 8px;">
+                                            <div class="progress-bar bg-dark" role="progressbar" 
+                                                 style="width: {{ hors_service_pourcentage }}%">
+                                                <span class="visually-hidden">{{ hors_service_pourcentage }}%</span>
+                                            </div>
+                                        </div>
+                                        <div class="small text-muted mt-1">
+                                            {{ vehicle_stats['hors service'] ?? 0 }} véhicule(s)
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Information -->
+                        <div class="col-md-6">
+                            <div class="card bg-light border-0">
+                                <div class="card-body">
+                                    <h6 class="fw-semibold mb-3 text-danger">
+                                        <i class="bi bi-info-circle me-2"></i>
+                                        Résumé
+                                    </h6>
+                                    <ul class="list-unstyled small">
+                                        <li class="mb-2">
+                                            <i class="bi bi-check-circle text-success me-2"></i>
+                                            {{ total_vehicles }} véhicule(s) dans le parc
+                                        </li>
+                                        <li class="mb-2">
+                                            <i class="bi bi-check-circle text-success me-2"></i>
+                                            {{ total_affectations }} affectation(s) enregistrée(s)
+                                        </li>
+                                        <li class="mb-2">
+                                            <i class="bi bi-check-circle text-success me-2"></i>
+                                            {{ total_entretiens }} entretien(s) réalisé(s)
+                                        </li>
+                                        <li>
+                                            <i class="bi bi-check-circle text-success me-2"></i>
+                                            Taux de disponibilité: {{ disponible_pourcentage }}%
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Actions sur le parc -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="d-grid gap-2">
+                                <a href="{{ path('app_vehicle_index') }}" class="btn btn-outline-danger d-flex align-items-center justify-content-center gap-2 py-3">
+                                    <i class="bi bi-car-front"></i>
+                                    Gérer le parc automobile
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <div class="text-muted mb-3">
+                            <i class="bi bi-car-front display-6"></i>
+                        </div>
+                        <h5 class="text-muted mb-2">Aucun véhicule enregistré</h5>
+                        <p class="text-muted mb-4">Commencez par ajouter votre premier véhicule</p>
+                        <a href="{{ path('app_vehicle_new') }}" class="btn btn-danger">
+                            <i class="bi bi-plus-circle me-1"></i>
+                            Ajouter un véhicule
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Actions rapides -->
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white border-0 py-4">
+                <h5 class="mb-0 text-danger fw-semibold">
+                    <i class="bi bi-lightning me-2"></i>
+                    Actions rapides
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    <a href="{{ path('app_vehicle_new') }}" 
+                       class="list-group-item list-group-item-action border-0 py-3 px-4 d-flex align-items-center gap-3">
+                        <div class="bg-danger bg-opacity-10 text-danger rounded-circle d-flex align-items-center justify-content-center"
+                             style="width: 40px; height: 40px;">
+                            <i class="bi bi-plus-lg"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="fw-semibold">Nouveau véhicule</div>
+                            <div class="small text-muted">Ajouter au parc</div>
+                        </div>
+                        <i class="bi bi-chevron-right text-muted"></i>
+                    </a>
+                    
+                    <a href="{{ path('app_affectation_new') }}" 
+                       class="list-group-item list-group-item-action border-0 py-3 px-4 d-flex align-items-center gap-3">
+                        <div class="bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center"
+                             style="width: 40px; height: 40px;">
+                            <i class="bi bi-person-plus"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="fw-semibold">Nouvelle affectation</div>
+                            <div class="small text-muted">Attribuer un véhicule</div>
+                        </div>
+                        <i class="bi bi-chevron-right text-muted"></i>
+                    </a>
+                    
+                    <a href="{{ path('app_entretien_new') }}" 
+                       class="list-group-item list-group-item-action border-0 py-3 px-4 d-flex align-items-center gap-3">
+                        <div class="bg-warning bg-opacity-10 text-warning rounded-circle d-flex align-items-center justify-content-center"
+                             style="width: 40px; height: 40px;">
+                            <i class="bi bi-tools"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="fw-semibold">Nouvel entretien</div>
+                            <div class="small text-muted">Enregistrer maintenance</div>
+                        </div>
+                        <i class="bi bi-chevron-right text-muted"></i>
+                    </a>
+                    
+                    <a href="{{ path('app_vehicle_index') }}" 
+                       class="list-group-item list-group-item-action border-0 py-3 px-4 d-flex align-items-center gap-3">
+                        <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center"
+                             style="width: 40px; height: 40px;">
+                            <i class="bi bi-list-ul"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="fw-semibold">Liste complète</div>
+                            <div class="small text-muted">Tous les véhicules</div>
+                        </div>
+                        <i class="bi bi-chevron-right text-muted"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+    
+    .dashboard-card {
+        border-top: 4px solid #dc2626;
+    }
+    
+    .dashboard-card:hover {
+        border-color: #b91c1c;
+    }
+    
+    .display-4 {
+        font-size: 2.5rem;
+        font-weight: 700;
+    }
+    
+    .display-6 {
+        font-size: 2rem;
+        font-weight: 700;
+    }
+    
+    .list-group-item {
+        border-left: 0;
+        border-right: 0;
+        transition: background-color 0.2s ease;
+    }
+    
+    .list-group-item:first-child {
+        border-top: 0;
+    }
+    
+    .list-group-item:last-child {
+        border-bottom: 0;
+    }
+    
+    .list-group-item:hover {
+        background-color: rgba(220, 38, 38, 0.05);
+    }
+    
+    .space-y-3 > * + * {
+        margin-top: 1rem;
+    }
+    
+    .progress {
+        border-radius: 4px;
+        background-color: #f3f4f6;
+    }
+    
+    .progress-bar {
+        border-radius: 4px;
+    }
+    
+    .rounded-3 {
+        border-radius: 12px;
+    }
+    
+    @media (max-width: 768px) {
+        .display-4 {
+            font-size: 2rem;
+        }
+        
+        .display-6 {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}

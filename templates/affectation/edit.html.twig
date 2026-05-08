@@ -1,0 +1,256 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier affectation #{{ affectation.id }} - ParcAuto{% endblock %}
+
+{% block page_icon 'pencil-square' %}
+
+{% block page_title %}Modifier l'affectation{% endblock %}
+
+{% block page_description %}
+    Mise à jour de l'affectation véhicule/conducteur
+{% endblock %}
+
+{% block page_actions %}
+    <div class="d-flex gap-2">
+        <a href="{{ path('app_affectation_index') }}" class="btn btn-light border d-flex align-items-center gap-2">
+            <i class="bi bi-arrow-left"></i>
+            <span>Retour</span>
+        </a>
+        <a href="{{ path('app_affectation_show', {'id': affectation.id}) }}" class="btn btn-outline-danger d-flex align-items-center gap-2">
+            <i class="bi bi-eye"></i>
+            <span>Détails</span>
+        </a>
+    </div>
+{% endblock %}
+
+{% block body %}
+<div class="row">
+    <!-- Formulaire d'édition -->
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 pb-0 pt-4">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="bg-warning bg-opacity-10 text-warning rounded-circle d-flex align-items-center justify-content-center"
+                         style="width: 48px; height: 48px;">
+                        <i class="bi bi-pencil-square fs-5"></i>
+                    </div>
+                    <div>
+                        <h4 class="mb-0 text-dark">Modification affectation</h4>
+                        <p class="text-muted small mb-0">#{{ affectation.id }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-body p-4 pt-3">
+                {{ include('affectation/_form.html.twig', {
+                    'button_label': 'Enregistrer les modifications',
+                    'button_icon': 'check-lg'
+                }) }}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Informations et actions -->
+    <div class="col-lg-4">
+        <!-- Vue d'ensemble -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white border-0 py-3">
+                <h6 class="mb-0 text-dark fw-semibold">
+                    <i class="bi bi-card-checklist text-danger me-2"></i>
+                    Vue d'ensemble
+                </h6>
+            </div>
+            <div class="card-body">
+                <!-- Véhicule -->
+                <div class="d-flex align-items-center gap-3 mb-3 pb-3 border-bottom">
+                    <div class="bg-danger bg-opacity-10 text-danger rounded-circle d-flex align-items-center justify-content-center"
+                         style="width: 40px; height: 40px; flex-shrink: 0;">
+                        <i class="bi bi-car-front"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <div class="small text-muted mb-1">Véhicule</div>
+                        <div class="fw-semibold text-dark">
+                            {% if affectation.vehicle %}
+                                {{ affectation.vehicle.immatriculation }}
+                                <small class="text-muted d-block">{{ affectation.vehicle.modele }}</small>
+                            {% else %}
+                                <span class="text-muted">Non défini</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Conducteur -->
+                <div class="d-flex align-items-center gap-3 mb-3 pb-3 border-bottom">
+                    <div class="bg-info bg-opacity-10 text-info rounded-circle d-flex align-items-center justify-content-center"
+                         style="width: 40px; height: 40px; flex-shrink: 0;">
+                        <i class="bi bi-person"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <div class="small text-muted mb-1">Conducteur</div>
+                        <div class="fw-semibold text-dark">
+                            {% if affectation.conducteur %}
+                                {{ affectation.conducteur.prenom }} {{ affectation.conducteur.nom }}
+                                <small class="text-muted d-block">{{ affectation.conducteur.email }}</small>
+                            {% else %}
+                                <span class="text-muted">Non défini</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Dates -->
+                <div class="row g-2">
+                    <div class="col-6">
+                        <div class="bg-light rounded p-3">
+                            <div class="small text-muted mb-1">Début</div>
+                            <div class="fw-semibold text-dark">
+                                {{ affectation.dateDebut ? affectation.dateDebut|date('d/m/Y') : '—' }}
+                                <div class="small text-muted">
+                                    {{ affectation.dateDebut ? affectation.dateDebut|date('H:i') : '' }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="bg-light rounded p-3">
+                            <div class="small text-muted mb-1">Fin</div>
+                            <div class="fw-semibold text-dark">
+                                {% if affectation.dateFin %}
+                                    {{ affectation.dateFin|date('d/m/Y') }}
+                                    <div class="small text-muted">{{ affectation.dateFin|date('H:i') }}</div>
+                                {% else %}
+                                    <span class="text-success">En cours</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Statut -->
+                <div class="mt-3 pt-3 border-top">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="small text-muted">Statut</div>
+                        {% set now = date('now') %}
+                        {% if affectation.dateFin is null or affectation.dateFin > now %}
+                            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-3 py-1 d-inline-flex align-items-center gap-1">
+                                <i class="bi bi-circle-fill fs-6"></i>
+                                Active
+                            </span>
+                        {% else %}
+                            <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 rounded-pill px-3 py-1 d-inline-flex align-items-center gap-1">
+                                <i class="bi bi-circle-fill fs-6"></i>
+                                Terminée
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Navigation -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 py-3">
+                <h6 class="mb-0 text-dark fw-semibold">
+                    <i class="bi bi-compass text-danger me-2"></i>
+                    Navigation
+                </h6>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    <a href="{{ path('app_affectation_show', {'id': affectation.id}) }}" 
+                       class="list-group-item list-group-item-action border-0 py-3 px-4 d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="bg-danger bg-opacity-10 text-danger rounded-circle d-flex align-items-center justify-content-center"
+                                 style="width: 36px; height: 36px;">
+                                <i class="bi bi-eye"></i>
+                            </div>
+                            <div>
+                                <div class="fw-semibold">Voir les détails</div>
+                                <div class="small text-muted">Informations complètes</div>
+                            </div>
+                        </div>
+                        <i class="bi bi-chevron-right text-muted"></i>
+                    </a>
+                    
+                    <a href="{{ path('app_affectation_index') }}" 
+                       class="list-group-item list-group-item-action border-0 py-3 px-4 d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="bg-secondary bg-opacity-10 text-secondary rounded-circle d-flex align-items-center justify-content-center"
+                                 style="width: 36px; height: 36px;">
+                                <i class="bi bi-list-ul"></i>
+                            </div>
+                            <div>
+                                <div class="fw-semibold">Liste complète</div>
+                                <div class="small text-muted">Toutes les affectations</div>
+                            </div>
+                        </div>
+                        <i class="bi bi-chevron-right text-muted"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 10px;
+        transition: transform 0.2s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-2px);
+    }
+    
+    .btn {
+        border-radius: 6px;
+        font-weight: 500;
+    }
+    
+    .list-group-item {
+        transition: background-color 0.15s ease;
+    }
+    
+    .list-group-item:hover {
+        background-color: rgba(220, 38, 38, 0.03);
+    }
+    
+    .bg-light {
+        background-color: #f8f9fa !important;
+    }
+    
+    .border-bottom {
+        border-bottom: 1px solid rgba(0,0,0,0.08) !important;
+    }
+    
+    .border-top {
+        border-top: 1px solid rgba(0,0,0,0.08) !important;
+    }
+    
+    .badge {
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+    
+    .small {
+        font-size: 0.8125rem;
+    }
+    
+    @media (max-width: 768px) {
+        .card-body {
+            padding: 1.5rem !important;
+        }
+        
+        .btn span {
+            display: none;
+        }
+        
+        .btn {
+            padding: 0.5rem;
+            min-width: 40px;
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}

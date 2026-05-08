@@ -1,0 +1,221 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier {{ vehicle.immatriculation }} - ParcAuto{% endblock %}
+
+{% block page_icon 'pencil-square' %}
+
+{% block page_title %}Modifier le véhicule{% endblock %}
+
+{% block page_description %}
+    Mettez à jour les informations du véhicule {{ vehicle.immatriculation }}
+{% endblock %}
+
+{% block page_actions %}
+    <div class="d-flex gap-2">
+        <a href="{{ path('app_vehicle_index') }}" class="btn btn-outline-secondary d-flex align-items-center gap-2">
+            <i class="bi bi-arrow-left"></i>
+            <span>Retour à la liste</span>
+        </a>
+        <a href="{{ path('app_vehicle_show', {'id': vehicle.id}) }}" class="btn btn-outline-danger d-flex align-items-center gap-2">
+            <i class="bi bi-eye"></i>
+            <span>Voir les détails</span>
+        </a>
+    </div>
+{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col-lg-8">
+        <!-- Carte d'édition -->
+        <div class="card border-0 shadow-lg mb-4">
+            <div class="card-header bg-white border-0 py-4">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="bg-danger bg-opacity-10 text-danger rounded-circle d-flex align-items-center justify-content-center"
+                         style="width: 50px; height: 50px;">
+                        <i class="bi bi-car-front-fill fs-4"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-1">Modification du véhicule</h5>
+                        <p class="text-muted mb-0">
+                            <i class="bi bi-info-circle me-1"></i>
+                            Modifiez les champs nécessaires ci-dessous
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-body p-4 p-lg-5">
+                {{ include('vehicle/_form.html.twig', {
+                    'button_label': 'Mettre à jour',
+                    'button_icon': 'save'
+                }) }}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <!-- Informations actuelles -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white border-0 py-4">
+                <h5 class="mb-0 text-danger fw-semibold">
+                    <i class="bi bi-info-circle me-2"></i>
+                    Informations actuelles
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <div class="small text-muted mb-2">Immatriculation</div>
+                    <div class="fw-semibold">{{ vehicle.immatriculation }}</div>
+                </div>
+                
+                <div class="mb-3">
+                    <div class="small text-muted mb-2">Modèle</div>
+                    <div class="fw-semibold">{{ vehicle.modele }}</div>
+                </div>
+                
+                <div class="mb-3">
+                    <div class="small text-muted mb-2">État actuel</div>
+                    <div>
+                        {% if vehicle.etat == 'Disponible' %}
+                            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-3 py-2 d-inline-flex align-items-center">
+                                <i class="bi bi-check-circle-fill me-2 fs-6"></i>
+                                Disponible
+                            </span>
+                        {% elseif vehicle.etat == 'En panne' %}
+                            <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill px-3 py-2 d-inline-flex align-items-center">
+                                <i class="bi bi-exclamation-triangle-fill me-2 fs-6"></i>
+                                En panne
+                            </span>
+                        {% elseif vehicle.etat == 'En service' %}
+                            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-3 py-2 d-inline-flex align-items-center">
+                                <i class="bi bi-car-front-fill me-2 fs-6"></i>
+                                En service
+                            </span>
+                        {% elseif vehicle.etat == 'En entretien' %}
+                            <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 rounded-pill px-3 py-2 d-inline-flex align-items-center">
+                                <i class="bi bi-tools me-2 fs-6"></i>
+                                En entretien
+                            </span>
+                        {% elseif vehicle.etat == 'Hors service' %}
+                            <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 rounded-pill px-3 py-2 d-inline-flex align-items-center">
+                                <i class="bi bi-slash-circle-fill me-2 fs-6"></i>
+                                Hors service
+                            </span>
+                        {% else %}
+                            <span class="badge bg-light bg-opacity-10 text-dark border border-secondary border-opacity-25 rounded-pill px-3 py-2 d-inline-flex align-items-center">
+                                <i class="bi bi-question-circle-fill me-2 fs-6"></i>
+                                {{ vehicle.etat }}
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <div class="small text-muted mb-2">Kilométrage actuel</div>
+                    <div class="fw-semibold">{{ vehicle.kilometrage | number_format(0, ',', ' ') }} km</div>
+                </div>
+                
+                <div class="mt-4 pt-3 border-top">
+                    <div class="small text-muted mb-2">ID du véhicule</div>
+                    <div class="fw-semibold">#{{ vehicle.id }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 12px;
+    }
+    
+    .btn-outline-danger:hover {
+        background-color: rgba(220, 38, 38, 0.1);
+    }
+    
+    .btn-outline-warning:hover {
+        background-color: rgba(245, 158, 11, 0.1);
+    }
+    
+    .modal-content {
+        border-radius: 12px;
+    }
+    
+    .badge {
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+    }
+    
+    .border-danger {
+        border-color: #dc2626 !important;
+    }
+    
+    .bg-light {
+        background-color: #f8f9fa !important;
+    }
+    
+    .bg-opacity-10 {
+        background-color: rgba(var(--bs-primary-rgb), 0.1) !important;
+    }
+    
+    .bg-success.bg-opacity-10 {
+        background-color: rgba(25, 135, 84, 0.1) !important;
+    }
+    
+    .bg-danger.bg-opacity-10 {
+        background-color: rgba(220, 53, 69, 0.1) !important;
+    }
+    
+    .bg-primary.bg-opacity-10 {
+        background-color: rgba(13, 110, 253, 0.1) !important;
+    }
+    
+    .bg-warning.bg-opacity-10 {
+        background-color: rgba(255, 193, 7, 0.1) !important;
+    }
+    
+    .bg-secondary.bg-opacity-10 {
+        background-color: rgba(108, 117, 125, 0.1) !important;
+    }
+    
+    .is-modified {
+        border-left: 4px solid #0d6efd !important;
+        background-color: rgba(13, 110, 253, 0.05) !important;
+    }
+    
+    .list-unstyled li {
+        margin-bottom: 0.5rem;
+    }
+    
+    .text-success {
+        color: #198754 !important;
+    }
+    
+    .text-primary {
+        color: #0d6efd !important;
+    }
+    
+    .text-danger {
+        color: #dc2626 !important;
+    }
+    
+    .text-warning {
+        color: #ffc107 !important;
+    }
+    
+    .text-dark {
+        color: #212529 !important;
+    }
+    
+    /* Amélioration de la visibilité des icônes */
+    .bi-car-front-fill,
+    .bi-check-circle-fill,
+    .bi-exclamation-triangle-fill,
+    .bi-tools,
+    .bi-slash-circle-fill,
+    .bi-question-circle-fill {
+        opacity: 1 !important;
+        font-size: 1rem !important;
+    }
+</style>
+{% endblock %}
