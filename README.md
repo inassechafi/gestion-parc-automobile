@@ -14,3 +14,27 @@ A full-stack fleet management web application built with **Symfony 6**, **MySQL*
 - **Frontend:** Twig, Bootstrap 5
 - **Database:** MySQL
 - **Tools:** Git, Symfony CLI, phpMyAdmin
+
+## 📦 Installation Steps
+
+```bash
+# Clone the project
+git clone https://github.com/YOUR_USERNAME/gestion-parc-automobile.git
+
+# Navigate to the project folder
+cd gestion-parc-automobile
+
+# Install dependencies
+composer install
+
+# Configure the database in .env or .env.local
+DATABASE_URL="mysql://root:@127.0.0.1:3306/gestion_parc"
+
+# Create the database
+php bin/console doctrine:database:create
+
+# Run migrations
+php bin/console doctrine:migrations:migrate
+
+# Start the server
+symfony server:start
