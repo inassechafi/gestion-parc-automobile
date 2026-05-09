@@ -1,4 +1,3 @@
-
 ###> symfony/framework-bundle ###
 /.env.local
 /.env.local.php
@@ -18,3 +17,42 @@
 /public/assets/
 /assets/vendor/
 ###< symfony/asset-mapper ###
+
+###> Symfony CLI ###
+/.symfony/
+/.php-version
+###< Symfony CLI ###
+
+###> IDE and OS files ###
+/.idea/
+/.vscode/
+/.DS_Store
+/Thumbs.db
+/.project
+/.settings/
+###< IDE and OS files ###
+
+###> Logs ###
+*.log
+/var/log/
+###< Logs ###
+
+###> Composer ###
+composer.phar
+###< Composer ###
+
+###> Environment files ###
+.env
+.env.*.local
+.env.local.php
+.env.prod
+.env.prod.local
+###< Environment files ###
+
+###> PHP-CS-Fixer ###
+.php-cs-fixer.cache
+###< PHP-CS-Fixer ###
+
+###> PHPUnit ###
+.phpunit.result.cache
+###< PHPUnit ###
