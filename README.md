@@ -19,7 +19,7 @@ A full-stack fleet management web application built with **Symfony 6**, **MySQL*
 
 ```bash
 # Clone the project
-git clone https://github.com/YOUR_USERNAME/gestion-parc-automobile.git
+git clone https://github.com/inassechafi/gestion-parc-automobile.git
 
 # Navigate to the project folder
 cd gestion-parc-automobile
